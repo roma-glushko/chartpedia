@@ -1,0 +1,11 @@
+[package]
+name = "chartpedia"
+version = "0.0.1"
+edition = "2021"
+authors = ["Roman Hlushko"]
+
+[dependencies]
+clap = { version = "4.5.0", features = ["derive"] }
+fern = { version = "0.6.2", features = ["colored"] }
+log = "0.4.20"
+chrono = "0.4.33"
