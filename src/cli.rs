@@ -1,3 +1,7 @@
+/*
+* Copyright 2024, Roma Hlushko
+* SPDX-License-Identifier: Apache-2.0
+*/
 use clap::builder::TypedValueParser;
 use clap::{Parser, Subcommand};
 use log::LevelFilter;

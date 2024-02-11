@@ -1,3 +1,7 @@
+/*
+* Copyright 2024, Roma Hlushko
+* SPDX-License-Identifier: Apache-2.0
+*/
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::LevelFilter;

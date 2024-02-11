@@ -2,8 +2,6 @@
 
 A convenient way to document your Helm charts.
 
-chartpedia takes 
-
 ## Installation
 
 Coming soon
