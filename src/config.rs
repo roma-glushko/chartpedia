@@ -6,12 +6,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 struct CommentsConfig {
-    pub format: String
+    pub format: String,
 }
 
 impl Default for CommentsConfig {
     fn default() -> Self {
-        CommentsConfig{
+        CommentsConfig {
             format: "##".to_string(),
         }
     }
@@ -53,7 +53,7 @@ struct ModifiersConfig {
 
 impl Default for ModifiersConfig {
     fn default() -> Self {
-        ModifiersConfig{
+        ModifiersConfig {
             array: "array".to_string(),
             object: "object".to_string(),
             string: "string".to_string(),
@@ -66,7 +66,7 @@ impl Default for ModifiersConfig {
 #[derive(Debug, Default, Serialize, Deserialize)]
 struct RegexpConfig {
     #[serde(rename = "paramsSectionTitle")]
-    pub params_section_title: String
+    pub params_section_title: String,
 }
 
 impl Default for RegexpConfig {

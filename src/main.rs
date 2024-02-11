@@ -5,13 +5,13 @@
 use clap::Parser;
 
 mod cli;
+mod config;
 mod logging;
 mod metadata;
 mod parser;
 mod render;
-mod config;
 
-use logging::{setup_logging};
+use logging::setup_logging;
 
 fn main() {
     let cli = cli::Cli::parse();

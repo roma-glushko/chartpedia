@@ -2,61 +2,6 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-/**
-class Parameter {
-  constructor(name) {
-    /* Parameter information */
-    // The parameter path using dot notation
-    this.name = name;
-    // The parameter description
-    this.description = '';
-    // The parameter value
-    this.value = undefined;
-    // The parameter type
-    this.type = '';
-
-    /* Extra metadata about the parameter */
-    // The modifiers applied to the parameter as an array of strings
-    this.modifiers = [];
-    // The section the parameter belongs to
-    this.section = '';
-
-    /* Properties to manage tool behaviour for this parameter */
-    // Skips the check of the parameter
-    this.validate = true;
-    // Whether to render the paramter into the README
-    this.readme = true;
-    // Whether to render the paramter into the schema
-    this.schema = true;
-  }
-
-  // Extra parameters won't be checked but will be rendered on the README
-  set extra(extra) {
-    if (extra) {
-      this.validate = false;
-      this.readme = true;
-    }
-  }
-
-  get extra() {
-    return (!this.validate && this.readme);
-  }
-
-  set skip(skip) {
-    if (skip) {
-      this.validate = false;
-      this.readme = false;
-    } else {
-      this.validate = true;
-      this.readme = true;
-    }
-  }
-
-  get skip() {
-    return (!this.validate && !this.readme);
-  }
-}
-**/
 
 // Param defines a chart values
 pub struct Param {
@@ -65,17 +10,47 @@ pub struct Param {
     value: Option<String>,
     descr: Option<String>,
     modifiers: Vec<String>,
+    section: Option<&Section>,
+    should_validate: bool,
+    render_in_readme: bool,
+    render_in_schema: bool,
 }
 
 impl Param {
     pub(crate) fn new(name: String, modifiers: Vec<String>, descr: Option<String>) -> Param {
-        Param{
+        Param {
             name,
             param_type: None,
             value: None,
             modifiers,
             descr,
+            section: None,
+            should_validate: true,
+            render_in_readme: true,
+            render_in_schema: true,
         }
+    }
+
+    pub fn set_section(mut self, section: &Section) {
+        self.section = Some(section);
+    }
+
+    pub fn skip(mut self) {
+        self.should_validate = false;
+        self.render_in_readme = false;
+    }
+
+    pub fn has_skipped(self) -> bool {
+        return !self.should_validate && !self.render_in_readme;
+    }
+
+    pub fn set_extra(mut self) {
+        self.should_validate = false;
+        self.render_in_readme = true;
+    }
+
+    pub fn has_extra(mut self) -> bool {
+        return !self.should_validate && self.render_in_readme;
     }
 }
 
@@ -91,7 +66,7 @@ impl Section {
         Section {
             name,
             descr: Vec::new(),
-            params:  Vec::new(),
+            params: Vec::new(),
         }
     }
 
@@ -107,12 +82,12 @@ impl Section {
 // Metadata defines the general metadata defined in a chart values file
 pub struct Metadata {
     sections: Vec<&Section>,
-    params: Vec<&Param>
+    params: Vec<&Param>,
 }
 
 impl Metadata {
     pub(crate) fn new() -> Metadata {
-        Metadata{
+        Metadata {
             sections: Vec::new(),
             params: Vec::new(),
         }

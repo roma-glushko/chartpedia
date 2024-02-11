@@ -37,6 +37,4 @@ pub struct Cli {
 }
 
 #[derive(Subcommand)]
-pub enum Commands {
-
-}
+pub enum Commands {}
