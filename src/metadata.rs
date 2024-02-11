@@ -4,13 +4,13 @@
 */
 
 // Param defines a chart values
-pub struct Param {
+pub struct Param<'a> {
     name: String,
     param_type: Option<String>,
     value: Option<String>,
     descr: Option<String>,
     modifiers: Vec<String>,
-    section: Option<&Section>,
+    section: Option<&'a Section>,
     should_validate: bool,
     render_in_readme: bool,
     render_in_schema: bool,
@@ -55,10 +55,10 @@ impl Param {
 }
 
 // Section defines a param section
-pub struct Section {
+pub struct Section<'a> {
     name: String,
     descr: Vec<String>,
-    params: Vec<&Param>,
+    params: Vec<&'a Param>,
 }
 
 impl Section {
@@ -80,9 +80,9 @@ impl Section {
 }
 
 // Metadata defines the general metadata defined in a chart values file
-pub struct Metadata {
-    sections: Vec<&Section>,
-    params: Vec<&Param>,
+pub struct Metadata<'a> {
+    sections: Vec<&'a Section>,
+    params: Vec<&'a Param>,
 }
 
 impl Metadata {

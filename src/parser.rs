@@ -188,7 +188,7 @@ impl MetadataParser {
     }
 
     fn has_descr_end(self, line: &String) -> Option<bool> {
-        if let Some(captures) = self.descr_end_regex.captures(line.as_str()) {
+        if let Some(_) = self.descr_end_regex.captures(line.as_str()) {
             return Some(true);
         }
 

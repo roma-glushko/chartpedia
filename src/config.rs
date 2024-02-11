@@ -84,3 +84,9 @@ pub struct Config {
     pub modifiers: TagsConfig,
     pub regexp: RegexpConfig,
 }
+
+impl Config {
+    pub fn load(config_path: String) -> Config {
+        todo!()
+    }
+}
