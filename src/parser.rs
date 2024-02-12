@@ -81,7 +81,7 @@ impl MetadataParser {
         }
     }
 
-    fn parse(self, values_file_path: String) -> Result<Metadata, E> {
+    fn parse(self, values_file_path: String) -> Result<Metadata, Err> {
         let values_file = File::open(values_file_path)?;
         let reader = io::BufReader::new(values_file);
 
@@ -93,7 +93,7 @@ impl MetadataParser {
             match line_res {
                 Ok(line) => {
                     if let Some(param) = self.try_parse_param(&line) {
-                        metadata.add_param(&param);
+                        metadata.add_param(param);
 
                         if let Some(section) = &curr_section {
                             section.add_param(&param)
@@ -101,7 +101,7 @@ impl MetadataParser {
                     }
 
                     if let Some(section) = self.try_parse_section(&line) {
-                        metadata.add_section(&section);
+                        metadata.add_section(section);
 
                         curr_section = Some(&section)
                     }
