@@ -168,7 +168,8 @@ impl MetadataParser {
                 mod_str if !mod_str.is_empty() => mod_str
                     .trim_matches(|c| c == '[' || c == ']')
                     .split(",")
-                    .map(|m| m.trim()),
+                    .map(|m| m.trim().to_string())
+                    .collect(),
                 _ => vec![],
             };
 

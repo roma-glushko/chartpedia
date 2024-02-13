@@ -37,4 +37,16 @@ pub struct Cli {
 }
 
 #[derive(Subcommand)]
-pub enum Commands {}
+pub enum Commands {
+    /// does testing things
+    Gen {
+        /// lists test values
+        #[arg(short, long)]
+        list: bool,
+    },
+    Lint {
+        /// lists test values
+        #[arg(short, long)]
+        list: bool,
+    },
+}

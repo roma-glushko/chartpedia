@@ -25,17 +25,16 @@ fn main() {
     // .chartpedia.yaml
 
     match &cli.command {
-        Some(Commands::Gen) => {
+        Some(Commands::Gen{list}) => {
             println!("Gen");
 
             ()
         },
-        Some(Commands::Lint) => {
+        Some(Commands::Lint{list}) => {
             println!("Lint");
 
             ()
         }
-        None => (),
-        _ => todo!(),
+        None => ()
     }
 }
