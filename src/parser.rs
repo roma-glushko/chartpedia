@@ -2,12 +2,15 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
+use std::error::Error;
+use std::fmt::{Display};
 use crate::config;
 use crate::metadata;
 use regex::Regex;
 use std::fs::File;
-use std::io;
+use std::{fmt, io};
 use std::io::BufRead;
+use std::rc::Rc;
 use std::str::FromStr;
 
 use crate::metadata::{Param, Section};
@@ -24,6 +27,20 @@ struct MetadataParser {
     skip_regex: Regex,
     extra_regex: Regex,
 }
+
+#[derive(Debug)]
+struct ParsingError {
+    message: String
+}
+
+impl Display for ParsingError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+// Implement the std::error::Error trait for your custom error type.
+impl Error for ParsingError {}
 
 impl MetadataParser {
     fn new(config: Config) -> MetadataParser {
@@ -81,29 +98,32 @@ impl MetadataParser {
         }
     }
 
-    fn parse(self, values_file_path: String) -> Result<Metadata, Err> {
+    fn parse(self, values_file_path: String) -> Result<Metadata, ParsingError> {
         let values_file = File::open(values_file_path)?;
         let reader = io::BufReader::new(values_file);
 
         let metadata = Metadata::new();
-        let mut curr_section: Option<&Section> = None;
+        let mut curr_section: Option<Rc<Section>> = None;
         let mut descr_parsing = false;
 
         for line_res in reader.lines() {
             match line_res {
                 Ok(line) => {
                     if let Some(param) = self.try_parse_param(&line) {
-                        metadata.add_param(param);
+                        let param_rc = Rc::new(param);
+
+                        metadata.add_param(param_rc);
 
                         if let Some(section) = &curr_section {
-                            section.add_param(&param)
+                            section.add_param(Rc::clone(&param_rc))
                         }
                     }
 
                     if let Some(section) = self.try_parse_section(&line) {
-                        metadata.add_section(section);
+                        let section_rc = Rc::new(section);
+                        metadata.add_section(section_rc);
 
-                        curr_section = Some(&section)
+                        curr_section = Some(Rc::clone(&section_rc))
                     }
 
                     if let Some(has_end) = self.has_descr_end(&line) {
@@ -113,7 +133,7 @@ impl MetadataParser {
                     }
 
                     if let Some(descr_line) = self.try_parse_descr_content(&line) {
-                        match curr_section {
+                        match &curr_section {
                             Some(section) => section.add_descr(descr_line),
                             None => todo!(),
                         }
@@ -124,7 +144,7 @@ impl MetadataParser {
                             descr_parsing = true;
 
                             if !descr_start.is_empty() {
-                                if let Some(section) = curr_section {
+                                if let Some(section) = &curr_section {
                                     section.add_descr(descr_start);
                                 }
                             }
@@ -142,19 +162,19 @@ impl MetadataParser {
 
     fn try_parse_param(self, line: &String) -> Option<Param> {
         if let Some(captures) = self.param_regex.captures(line.as_str()) {
-            let name = String::from_str(&captures[1]).unwrap();
+            let name = captures[1].to_string();
 
-            let modifiers = match captures[2].copy() {
-                capt if !capt.is_empty() => capt
+            let modifiers = match captures[2].to_string() {
+                mod_str if !mod_str.is_empty() => mod_str
                     .trim_matches(|c| c == '[' || c == ']')
                     .split(",")
                     .map(|m| m.trim()),
                 _ => vec![],
             };
 
-            let descr = captures[3].copy();
+            let descr = captures[3].to_string();
 
-            return Some(Param::new(name, modifiers, descr));
+            return Some(Param::new(name, modifiers, Some(descr)));
         }
 
         if let Some(captures) = self.skip_regex.captures(line.as_str()) {
@@ -181,7 +201,7 @@ impl MetadataParser {
 
     fn try_parse_section(self, line: &String) -> Option<Section> {
         if let Some(captures) = self.section_regex.captures(line.as_str()) {
-            return Some(Section::new(captures[1].copy()));
+            return Some(Section::new(captures[1].to_string()));
         }
 
         None
@@ -197,7 +217,7 @@ impl MetadataParser {
 
     fn try_parse_descr_content(self, line: &String) -> Option<String> {
         if let Some(captures) = self.descr_content_regex.captures(line.as_str()) {
-            return Some(captures[1].copy());
+            return Some(captures[1].to_string());
         }
 
         None
@@ -205,7 +225,7 @@ impl MetadataParser {
 
     fn try_parse_descr_start(self, line: &String) -> Option<String> {
         if let Some(captures) = self.descr_start_regex.captures(line.as_str()) {
-            return Some(captures[1].copy());
+            return Some(captures[1].to_string());
         }
 
         None

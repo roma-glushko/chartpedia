@@ -3,6 +3,8 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
+use std::rc::Rc;
+
 // Param defines a chart values
 pub struct Param {
     name: String,
@@ -10,7 +12,7 @@ pub struct Param {
     value: Option<String>,
     descr: Option<String>,
     modifiers: Vec<String>,
-    section: Option<Section>,
+    section: Option<Rc<Section>>,
     should_validate: bool,
     render_in_readme: bool,
     render_in_schema: bool,
@@ -31,7 +33,7 @@ impl Param {
         }
     }
 
-    pub fn set_section(mut self, section: &Section) {
+    pub fn set_section(mut self, section: Rc<Section>) {
         self.section = Some(section);
     }
 
@@ -58,7 +60,7 @@ impl Param {
 pub struct Section {
     name: String,
     descr: Vec<String>,
-    params: Vec<Param>,
+    params: Vec<Rc<Param>>,
 }
 
 impl Section {
@@ -70,7 +72,7 @@ impl Section {
         }
     }
 
-    pub fn add_param(mut self, param: &Param) {
+    pub fn add_param(mut self, param: Rc<Param>) {
         self.params.push(param)
     }
 
@@ -81,8 +83,8 @@ impl Section {
 
 // Metadata defines the general metadata defined in a chart values file
 pub struct Metadata {
-    sections: Vec<Section>,
-    params: Vec<Param>,
+    sections: Vec<Rc<Section>>,
+    params: Vec<Rc<Param>>,
 }
 
 impl Metadata {
@@ -93,11 +95,11 @@ impl Metadata {
         }
     }
 
-    pub fn add_section(mut self, section: Section) {
+    pub fn add_section(mut self, section: Rc<Section>) {
         self.sections.push(section)
     }
 
-    pub fn add_param(mut self, param: Param) {
+    pub fn add_param(mut self, param: Rc<Param>) {
         self.params.push(param)
     }
 }

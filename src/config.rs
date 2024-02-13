@@ -4,7 +4,7 @@
 */
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct CommentsConfig {
     pub format: String,
 }
@@ -17,7 +17,7 @@ impl Default for CommentsConfig {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct TagsConfig {
     pub param: String,
     pub section: String,
@@ -42,7 +42,7 @@ impl Default for TagsConfig {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct ModifiersConfig {
     pub array: String,
     pub object: String,
@@ -63,7 +63,7 @@ impl Default for ModifiersConfig {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct RegexpConfig {
     #[serde(rename = "paramsSectionTitle")]
     pub params_section_title: String,
