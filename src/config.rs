@@ -2,10 +2,11 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
+use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-struct CommentsConfig {
+pub struct CommentsConfig {
     pub format: String,
 }
 
@@ -18,7 +19,7 @@ impl Default for CommentsConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct TagsConfig {
+pub struct TagsConfig {
     pub param: String,
     pub section: String,
     #[serde(rename = "descriptionStart")]
@@ -43,7 +44,7 @@ impl Default for TagsConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct ModifiersConfig {
+pub struct ModifiersConfig {
     pub array: String,
     pub object: String,
     pub string: String,
@@ -64,7 +65,7 @@ impl Default for ModifiersConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct RegexpConfig {
+pub struct RegexpConfig {
     #[serde(rename = "paramsSectionTitle")]
     pub params_section_title: String,
 }
@@ -86,7 +87,7 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn load(config_path: String) -> Config {
+    pub fn load(config_path: PathBuf) -> Config {
         todo!()
     }
 }

@@ -98,11 +98,11 @@ impl MetadataParser {
         }
     }
 
-    fn parse(self, values_file_path: String) -> Result<Metadata, ParsingError> {
-        let values_file = File::open(values_file_path)?;
+    fn parse(&self, values_file_path: String) -> Result<Metadata, ParsingError> {
+        let values_file = File::open(values_file_path).unwrap(); // TODO: handle this
         let reader = io::BufReader::new(values_file);
 
-        let metadata = Metadata::new();
+        let mut metadata = Metadata::new();
         let mut curr_section: Option<Rc<Section>> = None;
         let mut descr_parsing = false;
 
@@ -112,7 +112,7 @@ impl MetadataParser {
                     if let Some(param) = self.try_parse_param(&line) {
                         let param_rc = Rc::new(param);
 
-                        metadata.add_param(param_rc);
+                        metadata.add_param(Rc::clone(&param_rc));
 
                         if let Some(section) = &curr_section {
                             section.add_param(Rc::clone(&param_rc))
@@ -121,7 +121,7 @@ impl MetadataParser {
 
                     if let Some(section) = self.try_parse_section(&line) {
                         let section_rc = Rc::new(section);
-                        metadata.add_section(section_rc);
+                        metadata.add_section(Rc::clone(&section_rc));
 
                         curr_section = Some(Rc::clone(&section_rc))
                     }
@@ -160,7 +160,7 @@ impl MetadataParser {
         Ok(metadata)
     }
 
-    fn try_parse_param(self, line: &String) -> Option<Param> {
+    fn try_parse_param(&self, line: &String) -> Option<Param> {
         if let Some(captures) = self.param_regex.captures(line.as_str()) {
             let name = captures[1].to_string();
 
@@ -179,8 +179,8 @@ impl MetadataParser {
         }
 
         if let Some(captures) = self.skip_regex.captures(line.as_str()) {
-            let name = String::from_str(&captures[1]).unwrap();
-            let param = Param::new(name, vec![], None);
+            let name = captures[1].to_string();
+            let mut param = Param::new(name, vec![], None);
 
             param.skip();
 
@@ -191,7 +191,7 @@ impl MetadataParser {
             let name = String::from_str(&captures[1]).unwrap();
             let descr = String::from_str(&captures[3]).unwrap();
 
-            let param = Param::new(name, vec![], Some(descr));
+            let mut param = Param::new(name, vec![], Some(descr));
             param.set_extra();
 
             return Some(param);
@@ -200,7 +200,7 @@ impl MetadataParser {
         None
     }
 
-    fn try_parse_section(self, line: &String) -> Option<Section> {
+    fn try_parse_section(&self, line: &String) -> Option<Section> {
         if let Some(captures) = self.section_regex.captures(line.as_str()) {
             return Some(Section::new(captures[1].to_string()));
         }
@@ -208,7 +208,7 @@ impl MetadataParser {
         None
     }
 
-    fn has_descr_end(self, line: &String) -> Option<bool> {
+    fn has_descr_end(&self, line: &String) -> Option<bool> {
         if let Some(_) = self.descr_end_regex.captures(line.as_str()) {
             return Some(true);
         }
@@ -216,7 +216,7 @@ impl MetadataParser {
         None
     }
 
-    fn try_parse_descr_content(self, line: &String) -> Option<String> {
+    fn try_parse_descr_content(&self, line: &String) -> Option<String> {
         if let Some(captures) = self.descr_content_regex.captures(line.as_str()) {
             return Some(captures[1].to_string());
         }
@@ -224,7 +224,7 @@ impl MetadataParser {
         None
     }
 
-    fn try_parse_descr_start(self, line: &String) -> Option<String> {
+    fn try_parse_descr_start(&self, line: &String) -> Option<String> {
         if let Some(captures) = self.descr_start_regex.captures(line.as_str()) {
             return Some(captures[1].to_string());
         }

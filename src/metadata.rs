@@ -3,6 +3,7 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
+use std::cell::RefCell;
 use std::rc::Rc;
 
 // Param defines a chart values
@@ -33,25 +34,25 @@ impl Param {
         }
     }
 
-    pub fn set_section(mut self, section: Rc<Section>) {
+    pub fn set_section(&mut self, section: Rc<Section>) {
         self.section = Some(section);
     }
 
-    pub fn skip(mut self) {
+    pub fn skip(&mut self) {
         self.should_validate = false;
         self.render_in_readme = false;
     }
 
-    pub fn has_skipped(self) -> bool {
+    pub fn has_skipped(&self) -> bool {
         return !self.should_validate && !self.render_in_readme;
     }
 
-    pub fn set_extra(mut self) {
+    pub fn set_extra(&mut self) {
         self.should_validate = false;
         self.render_in_readme = true;
     }
 
-    pub fn has_extra(mut self) -> bool {
+    pub fn has_extra(&mut self) -> bool {
         return !self.should_validate && self.render_in_readme;
     }
 }
@@ -59,25 +60,25 @@ impl Param {
 // Section defines a param section
 pub struct Section {
     name: String,
-    descr: Vec<String>,
-    params: Vec<Rc<Param>>,
+    descr: RefCell<Vec<String>>,
+    params: RefCell<Vec<Rc<Param>>>,
 }
 
 impl Section {
     pub fn new(name: String) -> Section {
         Section {
             name,
-            descr: Vec::new(),
-            params: Vec::new(),
+            descr: RefCell::new(Vec::new()),
+            params: RefCell::new(Vec::new()),
         }
     }
 
-    pub fn add_param(mut self, param: Rc<Param>) {
-        self.params.push(param)
+    pub fn add_param(&self, param: Rc<Param>) {
+        self.params.borrow_mut().push(param)
     }
 
-    pub fn add_descr(mut self, line: String) {
-        self.descr.push(line);
+    pub fn add_descr(&self, line: String) {
+        self.descr.borrow_mut().push(line);
     }
 }
 
@@ -95,11 +96,11 @@ impl Metadata {
         }
     }
 
-    pub fn add_section(mut self, section: Rc<Section>) {
+    pub fn add_section(&mut self, section: Rc<Section>) {
         self.sections.push(section)
     }
 
-    pub fn add_param(mut self, param: Rc<Param>) {
+    pub fn add_param(&mut self, param: Rc<Param>) {
         self.params.push(param)
     }
 }

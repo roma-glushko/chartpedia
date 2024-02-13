@@ -2,6 +2,7 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
+use std::path::PathBuf;
 use clap::builder::TypedValueParser;
 use clap::{Parser, Subcommand};
 use log::LevelFilter;
@@ -31,6 +32,10 @@ pub struct Cli {
     .map(|s| s.parse::<LevelFilter>().unwrap()),
     )]
     pub verbosity: LevelFilter,
+
+    /// Config
+    #[arg(short, long, value_name = "CONFIG_PATH", default_value=".chartpedia.yaml")]
+    pub config_path: PathBuf,
 
     #[command(subcommand)]
     pub command: Option<Commands>,

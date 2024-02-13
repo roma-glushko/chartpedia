@@ -20,9 +20,7 @@ fn main() {
 
     setup_logging(cli.verbosity);
 
-    let config = Config::load(config_path);
-
-    // .chartpedia.yaml
+    let config = Config::load(cli.config_path);
 
     match &cli.command {
         Some(Commands::Gen{list}) => {
