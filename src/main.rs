@@ -20,19 +20,19 @@ fn main() {
 
     setup_logging(cli.verbosity);
 
-    let config = Config::load(cli.config_path);
+    let _config = Config::load(cli.config_path);
 
     match &cli.command {
-        Some(Commands::Gen{list}) => {
+        Some(Commands::Gen { list: _ }) => {
             println!("Gen");
 
             ()
-        },
-        Some(Commands::Lint{list}) => {
+        }
+        Some(Commands::Lint { list: _ }) => {
             println!("Lint");
 
             ()
         }
-        None => ()
+        None => (),
     }
 }

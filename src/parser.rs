@@ -2,16 +2,16 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-use std::error::Error;
-use std::fmt::{Display};
 use crate::config;
 use crate::metadata;
 use regex::Regex;
+use std::error::Error;
+use std::fmt::Display;
 use std::fs::File;
-use std::{fmt, io};
 use std::io::BufRead;
 use std::rc::Rc;
 use std::str::FromStr;
+use std::{fmt, io};
 
 use crate::metadata::{Param, Section};
 use config::Config;
@@ -30,7 +30,7 @@ struct MetadataParser {
 
 #[derive(Debug)]
 struct ParsingError {
-    message: String
+    message: String,
 }
 
 impl Display for ParsingError {
@@ -151,7 +151,7 @@ impl MetadataParser {
                         }
                     }
                 }
-                Err(err) => {
+                Err(_err) => {
                     todo!()
                 }
             }
@@ -160,14 +160,14 @@ impl MetadataParser {
         Ok(metadata)
     }
 
-    fn try_parse_param(&self, line: &String) -> Option<Param> {
-        if let Some(captures) = self.param_regex.captures(line.as_str()) {
+    fn try_parse_param(&self, line: &str) -> Option<Param> {
+        if let Some(captures) = self.param_regex.captures(line) {
             let name = captures[1].to_string();
 
             let modifiers = match captures[2].to_string() {
                 mod_str if !mod_str.is_empty() => mod_str
                     .trim_matches(|c| c == '[' || c == ']')
-                    .split(",")
+                    .split(',')
                     .map(|m| m.trim().to_string())
                     .collect(),
                 _ => vec![],
@@ -178,7 +178,7 @@ impl MetadataParser {
             return Some(Param::new(name, modifiers, Some(descr)));
         }
 
-        if let Some(captures) = self.skip_regex.captures(line.as_str()) {
+        if let Some(captures) = self.skip_regex.captures(line) {
             let name = captures[1].to_string();
             let mut param = Param::new(name, vec![], None);
 
@@ -187,7 +187,7 @@ impl MetadataParser {
             return Some(param);
         }
 
-        if let Some(captures) = self.extra_regex.captures(line.as_str()) {
+        if let Some(captures) = self.extra_regex.captures(line) {
             let name = String::from_str(&captures[1]).unwrap();
             let descr = String::from_str(&captures[3]).unwrap();
 
@@ -200,32 +200,32 @@ impl MetadataParser {
         None
     }
 
-    fn try_parse_section(&self, line: &String) -> Option<Section> {
-        if let Some(captures) = self.section_regex.captures(line.as_str()) {
+    fn try_parse_section(&self, line: &str) -> Option<Section> {
+        if let Some(captures) = self.section_regex.captures(line) {
             return Some(Section::new(captures[1].to_string()));
         }
 
         None
     }
 
-    fn has_descr_end(&self, line: &String) -> Option<bool> {
-        if let Some(_) = self.descr_end_regex.captures(line.as_str()) {
+    fn has_descr_end(&self, line: &str) -> Option<bool> {
+        if let Some(_) = self.descr_end_regex.captures(line) {
             return Some(true);
         }
 
         None
     }
 
-    fn try_parse_descr_content(&self, line: &String) -> Option<String> {
-        if let Some(captures) = self.descr_content_regex.captures(line.as_str()) {
+    fn try_parse_descr_content(&self, line: &str) -> Option<String> {
+        if let Some(captures) = self.descr_content_regex.captures(line) {
             return Some(captures[1].to_string());
         }
 
         None
     }
 
-    fn try_parse_descr_start(&self, line: &String) -> Option<String> {
-        if let Some(captures) = self.descr_start_regex.captures(line.as_str()) {
+    fn try_parse_descr_start(&self, line: &str) -> Option<String> {
+        if let Some(captures) = self.descr_start_regex.captures(line) {
             return Some(captures[1].to_string());
         }
 

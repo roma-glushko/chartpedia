@@ -2,10 +2,10 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-use std::path::PathBuf;
 use clap::builder::TypedValueParser;
 use clap::{Parser, Subcommand};
 use log::LevelFilter;
+use std::path::PathBuf;
 
 const BANNER: &'static str = r"
       _                _                  _ _
@@ -33,9 +33,9 @@ pub struct Cli {
     )]
     pub verbosity: LevelFilter,
 
-    /// Config
-    #[arg(short, long, value_name = "CONFIG_PATH", default_value=".chartpedia.yaml")]
-    pub config_path: PathBuf,
+    /// Config (if empty, .chartpedia.yaml, .chartpedia.yml, .chartpedia.json are tried to be loaded from the current working directory)
+    #[arg(short, long, value_name = "CONFIG_PATH")]
+    pub config_path: Option<PathBuf>,
 
     #[command(subcommand)]
     pub command: Option<Commands>,
