@@ -43,46 +43,46 @@ impl Display for ParsingError {
 impl Error for ParsingError {}
 
 impl MetadataParser {
-    fn new(config: Config) -> MetadataParser {
-        let param_regex = Regex::new(&*format!(
+    pub fn new(config: Config) -> MetadataParser {
+        let param_regex = Regex::new(&format!(
             r"^\\s*{}\\s*{}\\s*([^\\s]+)\\s*(\\[.*?\\])?\\s*(.*)$",
-            regex::escape(&*config.comments.format),
-            regex::escape(&*config.tags.param)
+            regex::escape(&config.comments.format),
+            regex::escape(&config.tags.param)
         ))
         .unwrap();
-        let section_regex = Regex::new(&*format!(
+        let section_regex = Regex::new(&format!(
             r"^\\s*{}\\s*{}\\s*(.*)$",
-            regex::escape(&*config.comments.format),
-            regex::escape(&*config.tags.section)
+            regex::escape(&config.comments.format),
+            regex::escape(&config.tags.section)
         ))
         .unwrap();
-        let descr_start_regex = Regex::new(&*format!(
+        let descr_start_regex = Regex::new(&format!(
             r"^\\s*{}\\s*{}\\s*(.*)",
-            regex::escape(&*config.comments.format),
-            regex::escape(&*config.tags.description_start)
+            regex::escape(&config.comments.format),
+            regex::escape(&config.tags.description_start)
         ))
         .unwrap();
-        let descr_content_regex = Regex::new(&*format!(
+        let descr_content_regex = Regex::new(&format!(
             r"^\\s*{}\\s*(.*)",
-            regex::escape(&*config.comments.format)
+            regex::escape(&config.comments.format)
         ))
         .unwrap();
-        let descr_end_regex = Regex::new(&*format!(
+        let descr_end_regex = Regex::new(&format!(
             r"^\\s*{}\\s*{}\\s*(.*)",
-            regex::escape(&*config.comments.format),
-            regex::escape(&*config.tags.description_end)
+            regex::escape(&config.comments.format),
+            regex::escape(&config.tags.description_end)
         ))
         .unwrap();
-        let skip_regex = Regex::new(&*format!(
+        let skip_regex = Regex::new(&format!(
             r"^\\s*{}\\s*{}\\s*([^\\s]+)\\s*(.*)$",
-            regex::escape(&*config.comments.format),
-            regex::escape(&*config.tags.skip)
+            regex::escape(&config.comments.format),
+            regex::escape(&config.tags.skip)
         ))
         .unwrap();
-        let extra_regex = Regex::new(&*format!(
+        let extra_regex = Regex::new(&format!(
             r"^\\s*{}\\s*{}\\s*([^\\s]+)\\s*(\\[.*?\\])?\\s*(.*)$",
-            regex::escape(&*config.comments.format),
-            regex::escape(&*config.tags.extra)
+            regex::escape(&config.comments.format),
+            regex::escape(&config.tags.extra)
         ))
         .unwrap();
 
@@ -98,7 +98,7 @@ impl MetadataParser {
         }
     }
 
-    fn parse(&self, values_file_path: String) -> Result<Metadata, ParsingError> {
+    pub fn parse(&self, values_file_path: String) -> Result<Metadata, ParsingError> {
         let values_file = File::open(values_file_path).unwrap(); // TODO: handle this
         let reader = io::BufReader::new(values_file);
 
@@ -209,7 +209,7 @@ impl MetadataParser {
     }
 
     fn has_descr_end(&self, line: &str) -> Option<bool> {
-        if let Some(_) = self.descr_end_regex.captures(line) {
+        if self.descr_end_regex.captures(line).is_some() {
             return Some(true);
         }
 

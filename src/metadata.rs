@@ -44,7 +44,7 @@ impl Param {
     }
 
     pub fn has_skipped(&self) -> bool {
-        return !self.should_validate && !self.render_in_readme;
+        !self.should_validate && !self.render_in_readme
     }
 
     pub fn set_extra(&mut self) {
@@ -53,7 +53,7 @@ impl Param {
     }
 
     pub fn has_extra(&mut self) -> bool {
-        return !self.should_validate && self.render_in_readme;
+        !self.should_validate && self.render_in_readme
     }
 }
 

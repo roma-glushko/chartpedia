@@ -7,7 +7,7 @@ use clap::{Parser, Subcommand};
 use log::LevelFilter;
 use std::path::PathBuf;
 
-const BANNER: &'static str = r"
+const BANNER: &str = r"
       _                _                  _ _
      | |              | |                | (_)
   ___| |__   __ _ _ __| |_ _ __   ___  __| |_  __ _

@@ -111,10 +111,10 @@ impl ConfigError {
 
 impl Config {
     pub fn load(config_path: Option<PathBuf>) -> Result<Config> {
-        return match config_path {
+        match config_path {
             Some(path) => Config::load_config(path),
             None => Config::load_default_paths(),
-        };
+        }
     }
 
     fn load_default_paths() -> Result<Config> {
@@ -136,7 +136,7 @@ impl Config {
             return Config::load_config(path);
         }
 
-        return Ok(Config::default());
+        Ok(Config::default())
     }
 
     fn load_config<P: AsRef<Path>>(path: P) -> Result<Config> {
