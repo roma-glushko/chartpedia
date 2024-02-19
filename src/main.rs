@@ -22,9 +22,11 @@ fn main() {
 
     let _config = Config::load(cli.config_path);
 
+    log::debug!("Config is loaded");
+
     match &cli.command {
-        Some(Commands::Gen { list: _ }) => {
-            println!("Gen");
+        Some(Commands::Gen { md, values }) => {
+            println!("Gen: {} {}", md.to_string_lossy(), values.to_string_lossy());
 
             ()
         }

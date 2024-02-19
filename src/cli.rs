@@ -43,11 +43,14 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    /// does testing things
+    /// Generate chart values documentation
     Gen {
-        /// lists test values
-        #[arg(short, long)]
-        list: bool,
+        /// Path to a markdown file
+        #[arg(short, long, default_value="README.md")]
+        md: PathBuf,
+        /// Path to a chart values file
+        #[arg(short, long, default_value="values.yaml")]
+        values: PathBuf,
     },
     Lint {
         /// lists test values

@@ -6,7 +6,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::fs::File;
-use std::io::{BufReader, Read};
+use std::io::{Read};
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
@@ -113,7 +113,10 @@ impl Config {
     pub fn load(config_path: Option<PathBuf>) -> Result<Config> {
         match config_path {
             Some(path) => Config::load_config(path),
-            None => Config::load_default_paths(),
+            None => {
+                log::trace!("Config path is not specified");
+                Config::load_default_paths()
+            },
         }
     }
 
@@ -124,10 +127,10 @@ impl Config {
             Path::new(".chartpedia.json"),
         ];
 
-        log::debug!("trying to find under default path");
+        log::debug!("Trying to find under default path");
 
         for path in default_paths {
-            log::debug!("trying to load {}", &path.to_string_lossy());
+            log::debug!("- Trying to load {}", &path.to_string_lossy());
 
             if !path.exists() {
                 continue;
@@ -136,6 +139,7 @@ impl Config {
             return Config::load_config(path);
         }
 
+        log::debug!("The default config is loaded");
         Ok(Config::default())
     }
 
@@ -148,7 +152,7 @@ impl Config {
         match serde_yaml::from_str(&config_content) {
             Ok(config) => return Ok(config),
             Err(err) => log::debug!(
-                "failed to load {} as YAML {}",
+                "Failed to load {} as YAML {}",
                 path.as_ref().to_string_lossy(),
                 err
             ),
@@ -157,7 +161,7 @@ impl Config {
         match serde_json::from_str(&config_content) {
             Ok(config) => return Ok(config),
             Err(err) => log::debug!(
-                "failed to load {} as JSON {}",
+                "Failed to load {} as JSON {}",
                 path.as_ref().to_string_lossy(),
                 err
             ),
