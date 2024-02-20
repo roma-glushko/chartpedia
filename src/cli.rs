@@ -55,16 +55,23 @@ fn validate_file_exists(file_path: &str) -> Result<PathBuf, String> {
 pub enum Commands {
     /// Generate chart values documentation
     Gen {
-        /// Path to a markdown file
-        #[arg(short, long, default_value="README.md", value_parser=validate_file_exists)]
-        md: PathBuf,
         /// Path to a chart values file
         #[arg(short, long, default_value="values.yaml", value_parser=validate_file_exists)]
         values: PathBuf,
+        /// Path to a markdown file
+        #[arg(short, long, default_value="README.md", value_parser=validate_file_exists)]
+        markdown: PathBuf,
     },
-    Lint {
-        /// lists test values
-        #[arg(short, long)]
-        list: bool,
+    /// Check generated files based on values.
+    Check {
+        /// Path to a chart values file
+        #[arg(short, long, default_value="values.yaml", value_parser=validate_file_exists)]
+        values: PathBuf,
+        /// Path to a markdown file
+        #[arg(short, long, default_value="README.md", value_parser=validate_file_exists)]
+        markdown: PathBuf,
+        /// Fail if there are any undocumented chart values
+        #[arg(short, long, action, default_value="true")]
+        no_missing: bool,
     },
 }

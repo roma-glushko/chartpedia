@@ -34,7 +34,7 @@ fn main() {
     log::debug!("Config is loaded");
 
     match &cli.command {
-        Some(Commands::Gen { md, values }) => {
+        Some(Commands::Gen { markdown, values }) => {
             let parser = MetadataParser::new(config);
 
             let metadata = match parser.parse(values) {
@@ -48,8 +48,8 @@ fn main() {
 
             ()
         }
-        Some(Commands::Lint { list: _ }) => {
-            println!("Lint");
+        Some(Commands::Check { values , markdown, no_missing}) => {
+            println!("Lint: {}", values.to_string_lossy());
 
             ()
         }
