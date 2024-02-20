@@ -1,4 +1,4 @@
-# chartpedia
+# 📚 chartpedia
 
 A convenient way to document your Helm charts using short metadata in a values.yaml file:
 
