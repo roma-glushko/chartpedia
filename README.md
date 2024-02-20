@@ -20,6 +20,14 @@ image:
   pullSecrets: []
 ```
 
+## Features
+
+- 📦 Easy to install on MacOS, Linux, and Windows. Everything is packed into one slim binary.
+- ✅ Fully compatible with the original Bitnami Readme Generator format. If you are already using it, no change is needed to your values.yaml metadata to get started.
+- 🛠️ Support JSON and YAML configs
+- 👷 CI-friendly `check` command
+- 🦀 Written in blazing-fast and safe Rust
+
 ## Installation
 
 Coming soon
