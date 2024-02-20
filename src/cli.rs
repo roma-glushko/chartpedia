@@ -5,7 +5,7 @@
 use clap::builder::TypedValueParser;
 use clap::{Parser, Subcommand};
 use log::LevelFilter;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 const BANNER: &str = r"
       _                _                  _ _
@@ -41,15 +41,25 @@ pub struct Cli {
     pub command: Option<Commands>,
 }
 
+fn validate_file_exists(file_path: &str) -> Result<PathBuf, String> {
+    let path = PathBuf::from(file_path);
+
+    if path.exists() {
+        Ok(path)
+    } else {
+        Err(format!("The file \"{}\" does not exist.", path.to_string_lossy()))
+    }
+}
+
 #[derive(Subcommand)]
 pub enum Commands {
     /// Generate chart values documentation
     Gen {
         /// Path to a markdown file
-        #[arg(short, long, default_value="README.md")]
+        #[arg(short, long, default_value="README.md", value_parser=validate_file_exists)]
         md: PathBuf,
         /// Path to a chart values file
-        #[arg(short, long, default_value="values.yaml")]
+        #[arg(short, long, default_value="values.yaml", value_parser=validate_file_exists)]
         values: PathBuf,
     },
     Lint {

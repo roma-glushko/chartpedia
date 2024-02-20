@@ -2,6 +2,7 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
+use std::process;
 use clap::Parser;
 
 mod cli;
@@ -13,6 +14,7 @@ mod render;
 
 use crate::cli::Commands;
 use crate::config::Config;
+use crate::parser::MetadataParser;
 use logging::setup_logging;
 
 fn main() {
@@ -20,13 +22,29 @@ fn main() {
 
     setup_logging(cli.verbosity);
 
-    let _config = Config::load(cli.config_path);
+    let config = match Config::load(cli.config_path) {
+        Ok(config) => config,
+        Err(e) => {
+            log::error!("Failed to load config file: {}", e);
+
+            process::exit(1);
+        }
+    };
 
     log::debug!("Config is loaded");
 
     match &cli.command {
         Some(Commands::Gen { md, values }) => {
-            println!("Gen: {} {}", md.to_string_lossy(), values.to_string_lossy());
+            let parser = MetadataParser::new(config);
+
+            let metadata = match parser.parse(values) {
+                Ok(metadata) => metadata,
+                Err(err) => {
+                    log::error!("Failed to parse values metadata: {}", err);
+
+                    process::exit(1);
+                }
+            };
 
             ()
         }

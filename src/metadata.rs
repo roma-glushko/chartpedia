@@ -7,6 +7,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 // Param defines a chart values
+#[derive(Debug)]
 pub struct Param {
     name: String,
     param_type: Option<String>,
@@ -58,6 +59,7 @@ impl Param {
 }
 
 // Section defines a param section
+#[derive(Debug)]
 pub struct Section {
     name: String,
     descr: RefCell<Vec<String>>,
@@ -83,6 +85,7 @@ impl Section {
 }
 
 // Metadata defines the general metadata defined in a chart values file
+#[derive(Debug)]
 pub struct Metadata {
     sections: Vec<Rc<Section>>,
     params: Vec<Rc<Param>>,

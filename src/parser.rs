@@ -12,13 +12,14 @@ use std::io::BufRead;
 use std::rc::Rc;
 use std::str::FromStr;
 use std::{fmt, io};
+use std::path::Path;
+use anyhow::Result;
 
 use crate::metadata::{Param, Section};
 use config::Config;
 use metadata::Metadata;
 
-struct MetadataParser {
-    config: Config,
+pub struct MetadataParser {
     param_regex: Regex,
     section_regex: Regex,
     descr_start_regex: Regex,
@@ -87,7 +88,6 @@ impl MetadataParser {
         .unwrap();
 
         MetadataParser {
-            config,
             param_regex,
             section_regex,
             descr_start_regex,
@@ -98,8 +98,8 @@ impl MetadataParser {
         }
     }
 
-    pub fn parse(&self, values_file_path: String) -> Result<Metadata, ParsingError> {
-        let values_file = File::open(values_file_path).unwrap(); // TODO: handle this
+    pub fn parse<P: AsRef<Path>>(&self, values_file: P) -> Result<Metadata> {
+        let values_file = File::open(values_file)?;
         let reader = io::BufReader::new(values_file);
 
         let mut metadata = Metadata::new();
