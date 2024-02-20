@@ -1,8 +1,13 @@
+/*
+* Copyright 2024, Roma Hlushko
+* SPDX-License-Identifier: Apache-2.0
+*/
 use clap::builder::TypedValueParser;
 use clap::{Parser, Subcommand};
 use log::LevelFilter;
+use std::path::{Path, PathBuf};
 
-const BANNER: &'static str = r"
+const BANNER: &str = r"
       _                _                  _ _
      | |              | |                | (_)
   ___| |__   __ _ _ __| |_ _ __   ___  __| |_  __ _
@@ -28,11 +33,45 @@ pub struct Cli {
     )]
     pub verbosity: LevelFilter,
 
+    /// Config (if empty, .chartpedia.yaml, .chartpedia.yml, .chartpedia.json are tried to be loaded from the current working directory)
+    #[arg(short, long, value_name = "CONFIG_PATH")]
+    pub config_path: Option<PathBuf>,
+
     #[command(subcommand)]
     pub command: Option<Commands>,
 }
 
+fn validate_file_exists(file_path: &str) -> Result<PathBuf, String> {
+    let path = PathBuf::from(file_path);
+
+    if path.exists() {
+        Ok(path)
+    } else {
+        Err(format!("The file \"{}\" does not exist.", path.to_string_lossy()))
+    }
+}
+
 #[derive(Subcommand)]
 pub enum Commands {
-
+    /// Generate chart values documentation
+    Gen {
+        /// Path to a chart values file
+        #[arg(short, long, default_value="values.yaml", value_parser=validate_file_exists)]
+        values: PathBuf,
+        /// Path to a markdown file
+        #[arg(short, long, default_value="README.md", value_parser=validate_file_exists)]
+        markdown: PathBuf,
+    },
+    /// Check generated files based on values.
+    Check {
+        /// Path to a chart values file
+        #[arg(short, long, default_value="values.yaml", value_parser=validate_file_exists)]
+        values: PathBuf,
+        /// Path to a markdown file
+        #[arg(short, long, default_value="README.md", value_parser=validate_file_exists)]
+        markdown: PathBuf,
+        /// Fail if there are any undocumented chart values
+        #[arg(short, long, action, default_value="true")]
+        no_missing: bool,
+    },
 }

@@ -1,7 +1,11 @@
+/*
+* Copyright 2024, Roma Hlushko
+* SPDX-License-Identifier: Apache-2.0
+*/
+use chrono::Utc;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::LevelFilter;
-use chrono::{Utc};
 
 fn create_format_dispatch(colors: Option<ColoredLevelConfig>) -> Dispatch {
     Dispatch::new().format(move |out, message, record| {
