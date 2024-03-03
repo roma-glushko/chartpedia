@@ -4,16 +4,16 @@
 */
 use crate::config;
 use crate::metadata;
+use anyhow::Result;
 use regex::Regex;
 use std::error::Error;
 use std::fmt::Display;
 use std::fs::File;
 use std::io::BufRead;
+use std::path::Path;
 use std::rc::Rc;
 use std::str::FromStr;
 use std::{fmt, io};
-use std::path::Path;
-use anyhow::Result;
 
 use crate::metadata::{Param, Section};
 use config::Config;
@@ -44,7 +44,7 @@ impl Display for ParsingError {
 impl Error for ParsingError {}
 
 impl MetadataParser {
-    pub fn new(config: Config) -> MetadataParser {
+    pub fn new(config: &Config) -> MetadataParser {
         let param_regex = Regex::new(&format!(
             r"^\\s*{}\\s*{}\\s*([^\\s]+)\\s*(\\[.*?\\])?\\s*(.*)$",
             regex::escape(&config.comments.format),

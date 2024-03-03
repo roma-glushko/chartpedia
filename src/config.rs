@@ -6,7 +6,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::fs::File;
-use std::io::{Read};
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
@@ -116,7 +116,7 @@ impl Config {
             None => {
                 log::trace!("Config path is not specified");
                 Config::load_default_paths()
-            },
+            }
         }
     }
 

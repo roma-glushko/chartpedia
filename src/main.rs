@@ -2,8 +2,8 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-use std::process;
 use clap::Parser;
+use std::process;
 
 mod cli;
 mod config;
@@ -15,6 +15,7 @@ mod render;
 use crate::cli::Commands;
 use crate::config::Config;
 use crate::parser::MetadataParser;
+use crate::render::MarkdownRenderer;
 use logging::setup_logging;
 
 fn main() {
@@ -35,7 +36,8 @@ fn main() {
 
     match &cli.command {
         Some(Commands::Gen { markdown, values }) => {
-            let parser = MetadataParser::new(config);
+            let parser = MetadataParser::new(&config);
+            let renderer = MarkdownRenderer::new(&config);
 
             let metadata = match parser.parse(values) {
                 Ok(metadata) => metadata,
@@ -46,9 +48,15 @@ fn main() {
                 }
             };
 
+            renderer.render(&markdown);
+
             ()
         }
-        Some(Commands::Check { values , markdown, no_missing}) => {
+        Some(Commands::Check {
+            values,
+            markdown,
+            no_missing,
+        }) => {
             println!("Lint: {}", values.to_string_lossy());
 
             ()

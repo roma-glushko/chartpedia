@@ -5,7 +5,7 @@
 use clap::builder::TypedValueParser;
 use clap::{Parser, Subcommand};
 use log::LevelFilter;
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 
 const BANNER: &str = r"
       _                _                  _ _
@@ -47,7 +47,10 @@ fn validate_file_exists(file_path: &str) -> Result<PathBuf, String> {
     if path.exists() {
         Ok(path)
     } else {
-        Err(format!("The file \"{}\" does not exist.", path.to_string_lossy()))
+        Err(format!(
+            "The file \"{}\" does not exist.",
+            path.to_string_lossy()
+        ))
     }
 }
 
@@ -71,7 +74,7 @@ pub enum Commands {
         #[arg(short, long, default_value="README.md", value_parser=validate_file_exists)]
         markdown: PathBuf,
         /// Fail if there are any undocumented chart values
-        #[arg(short, long, action, default_value="true")]
+        #[arg(short, long, action, default_value = "true")]
         no_missing: bool,
     },
 }
