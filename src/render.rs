@@ -5,7 +5,7 @@
 
 use crate::config::Config;
 use anyhow::Result;
-use markdown_table::MarkdownTable;
+use markdown_table::{Heading, MarkdownTable};
 use regex::Regex;
 use std::fs::File;
 use std::io;
@@ -46,7 +46,7 @@ impl MarkdownRenderer {
                 Ok(line) => {
                     if let Some(section_level) = self.try_find_param_section(&line).take() {
                         log::debug!(
-                            "The parameter section is found at {} line (level: {})",
+                            "The parameters section is found at line {} (level: {})",
                             line_idx + 1,
                             section_level
                         );
@@ -57,24 +57,31 @@ impl MarkdownRenderer {
 
                         param_section_level = Some(section_level);
 
-                        let param_table = self.render_params();
+                        let param_table = self.render_params()?;
 
-                        new_content.push(line);
+                        new_content.push(format!("{}\n", line));
                         new_content.push(param_table.to_string());
 
                         continue;
                     }
 
                     if param_section_level.is_some() && !next_section_found {
-                        if let Some(section_pattern) = next_section_pattern.take() {
+                        if let Some(section_pattern) = next_section_pattern.as_ref() {
                             if section_pattern.is_match(&line) {
                                 next_section_found = true;
+
+                                log::debug!(
+                                    "The next section is found at line {}",
+                                    line_idx + 1,
+                                );
+                            } else {
+                                log::debug!("Skip line {} (the old parameters section): {}", line_idx + 1, line);
+                                continue;
                             }
                         }
-                    } else {
-                        continue;
                     }
 
+                    log::debug!("Keep line {}: {}", line_idx + 1, line);
                     new_content.push(line);
                 }
                 Err(_err) => {
@@ -83,10 +90,10 @@ impl MarkdownRenderer {
             }
         }
 
-        if param_section_level.is_some() {
+        if param_section_level.is_none() {
             log::warn!(
-                "The parameter section was not found in the markdown file. \
-                No parameter table was rendered"
+                "The parameters section was not found in the markdown file. \
+                No parameters table will be rendered"
             );
 
             return Ok(());
@@ -110,15 +117,21 @@ impl MarkdownRenderer {
         None
     }
 
-    fn render_params(&self) -> MarkdownTable<String> {
-        let param_table = MarkdownTable::new(
+    fn render_params(&self) -> Result<String> {
+        let mut param_table = MarkdownTable::new(
             vec![
-                vec!["test".to_string()],
-                vec!["1".to_string()],
-                vec!["2".to_string()]
+                vec!["test".to_string(), "1".to_string(), "2".to_string()],
             ]
         );
 
-        param_table
+        param_table.with_headings(
+            vec![
+                Heading::new("Name".to_string(), None),
+                Heading::new("Description".to_string(), None),
+                Heading::new("Value".to_string(), None),
+            ]
+        );
+
+        param_table.as_markdown()
     }
 }
