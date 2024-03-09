@@ -2,9 +2,7 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-use clap::builder::TypedValueParser;
 use clap::{Parser, Subcommand};
-use log::LevelFilter;
 use std::path::{PathBuf};
 
 const BANNER: &str = r"
@@ -23,15 +21,13 @@ const BANNER: &str = r"
 #[command(author, author, version)]
 #[command(about = BANNER)]
 pub struct Cli {
-    /// Verbosity
+    /// Debug
     #[arg(
     short,
     long,
-    default_value_t = LevelFilter::Info,
-    value_parser = clap::builder::PossibleValuesParser::new(["TRACE", "DEBUG", "INFO", "WARN", "ERROR"])
-    .map(|s| s.parse::<LevelFilter>().unwrap()),
+    action = clap::ArgAction::SetTrue
     )]
-    pub verbosity: LevelFilter,
+    pub debug: bool,
 
     /// Config (if empty, .chartpedia.yaml, .chartpedia.yml, .chartpedia.json are tried to be loaded from the current working directory)
     #[arg(short, long, value_name = "CONFIG_PATH")]

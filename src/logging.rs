@@ -29,7 +29,7 @@ fn create_format_dispatch(colors: Option<ColoredLevelConfig>) -> Dispatch {
     })
 }
 
-pub(crate) fn setup_logging(verbosity: LevelFilter) {
+pub(crate) fn setup_logging(debug: bool) {
     let logging_colors = ColoredLevelConfig::new()
         .debug(Color::BrightMagenta)
         .info(Color::BrightCyan)
@@ -39,7 +39,13 @@ pub(crate) fn setup_logging(verbosity: LevelFilter) {
     let dispatch = Dispatch::new()
         .chain(create_format_dispatch(Some(logging_colors)).chain(std::io::stdout()));
 
-    dispatch.apply().expect("Couldn't start logger.");
+    dispatch.apply().expect("Couldn't start logger");
 
-    log::set_max_level(verbosity)
+    let mut level = LevelFilter::Info;
+
+    if debug {
+        level = LevelFilter::Debug;
+    }
+
+    log::set_max_level(level)
 }

@@ -21,7 +21,7 @@ use logging::setup_logging;
 fn main() {
     let cli = cli::Cli::parse();
 
-    setup_logging(cli.verbosity);
+    setup_logging(cli.debug);
 
     let config = match Config::load(cli.config_path) {
         Ok(config) => config,
@@ -48,7 +48,7 @@ fn main() {
                 }
             };
 
-            renderer.render(&markdown);
+            let _ = renderer.render(&markdown);
 
             ()
         }

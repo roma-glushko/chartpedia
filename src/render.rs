@@ -70,9 +70,9 @@ impl MarkdownRenderer {
                             if section_pattern.is_match(&line) {
                                 next_section_found = true;
                             }
-                        } else {
-                            continue;
                         }
+                    } else {
+                        continue;
                     }
 
                     new_content.push(line);
@@ -108,10 +108,6 @@ impl MarkdownRenderer {
         }
 
         None
-    }
-
-    fn try_find_neighbor_section(&self, line: &str) -> Option<bool> {
-        Some(false)
     }
 
     fn render_params(&self) -> MarkdownTable<String> {

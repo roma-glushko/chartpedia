@@ -114,7 +114,7 @@ impl Config {
         match config_path {
             Some(path) => Config::load_config(path),
             None => {
-                log::trace!("Config path is not specified");
+                log::debug!("Config path is not specified");
                 Config::load_default_paths()
             }
         }
