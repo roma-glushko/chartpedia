@@ -3,7 +3,7 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 use clap::{Parser, Subcommand};
-use std::path::{PathBuf};
+use std::path::PathBuf;
 
 const BANNER: &str = r"
       _                _                  _ _

@@ -15,10 +15,10 @@ use std::rc::Rc;
 use std::str::FromStr;
 use std::{fmt, io};
 
-use crate::metadata::{Param, Section};
+use crate::metadata::metadata::{Metadata, Param, Section};
 use config::Config;
-use metadata::Metadata;
 
+/// MetadataParser parses metadata left in values.yaml file
 pub struct MetadataParser {
     param_regex: Regex,
     section_regex: Regex,

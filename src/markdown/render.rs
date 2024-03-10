@@ -52,7 +52,8 @@ impl MarkdownRenderer {
                         );
 
                         next_section_pattern = Some(Regex::new(&format!(
-                            r"^{}\s", regex::escape(&section_level.clone())
+                            r"^{}\s",
+                            regex::escape(&section_level.clone())
                         ))?);
 
                         param_section_level = Some(section_level);
@@ -70,12 +71,13 @@ impl MarkdownRenderer {
                             if section_pattern.is_match(&line) {
                                 next_section_found = true;
 
-                                log::debug!(
-                                    "The next section is found at line {}",
-                                    line_idx + 1,
-                                );
+                                log::debug!("The next section is found at line {}", line_idx + 1,);
                             } else {
-                                log::debug!("Skip line {} (the old parameters section): {}", line_idx + 1, line);
+                                log::debug!(
+                                    "Skip line {} (the old parameters section): {}",
+                                    line_idx + 1,
+                                    line
+                                );
                                 continue;
                             }
                         }
@@ -118,19 +120,17 @@ impl MarkdownRenderer {
     }
 
     fn render_params(&self) -> Result<String> {
-        let mut param_table = MarkdownTable::new(
-            vec![
-                vec!["test".to_string(), "1".to_string(), "2".to_string()],
-            ]
-        );
+        let mut param_table = MarkdownTable::new(vec![vec![
+            "test".to_string(),
+            "1".to_string(),
+            "2".to_string(),
+        ]]);
 
-        param_table.with_headings(
-            vec![
-                Heading::new("Name".to_string(), None),
-                Heading::new("Description".to_string(), None),
-                Heading::new("Value".to_string(), None),
-            ]
-        );
+        param_table.with_headings(vec![
+            Heading::new("Name".to_string(), None),
+            Heading::new("Description".to_string(), None),
+            Heading::new("Value".to_string(), None),
+        ]);
 
         param_table.as_markdown()
     }
