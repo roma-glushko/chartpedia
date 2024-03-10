@@ -1,4 +1,7 @@
-# 📚 chartpedia
+<div align="center">
+    <img src="./img/logo.png" width="400px" />
+    <h1>🧭 chartpedia</h1>
+</div>
 
 A convenient way to document your Helm charts using short metadata in a values.yaml file:
 
