@@ -41,6 +41,11 @@ impl MarkdownRenderer {
         let mut next_section_pattern: Option<Regex> = None;
         let mut next_section_found = false;
 
+        log::debug!(
+            "Updating markdown file: {:?}",
+            markdown_path.to_string_lossy()
+        );
+
         for (line_idx, read_res) in reader.lines().enumerate() {
             match read_res {
                 Ok(line) => {

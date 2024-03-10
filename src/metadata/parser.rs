@@ -3,7 +3,6 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 use crate::config;
-use crate::metadata;
 use anyhow::Result;
 use regex::Regex;
 use std::error::Error;

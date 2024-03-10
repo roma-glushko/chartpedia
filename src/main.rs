@@ -57,8 +57,8 @@ fn main() {
         }
         Some(Commands::Check {
             values,
-            markdown,
-            no_missing,
+            markdown: _,
+            no_missing: _,
         }) => {
             println!("Lint: {}", values.to_string_lossy());
 

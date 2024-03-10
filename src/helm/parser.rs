@@ -2,42 +2,94 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-use crate::metadata;
-use anyhow::Result;
-use serde_yaml::Value;
-use std::fmt::Display;
-use std::fs;
+use anyhow::{Result};
+use serde_yaml::{Mapping, Value};
+use std::{fmt, fs};
+use std::fmt::{Debug, Display};
 use std::path::Path;
-use std::str::FromStr;
+use thiserror::Error;
+use crate::helm::values::HelmValues;
 
-use crate::metadata::{Param, Section};
-use metadata::Metadata;
+#[derive(Error, Debug)]
+pub struct ValuesParseError {
+    message: String,
+}
+
+// Implement Display for your custom error
+impl fmt::Display for ValuesParseError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+impl ValuesParseError {
+    pub fn new(msg: String) -> Self {
+        ValuesParseError { message: msg }
+    }
+}
 
 /// ValuesParser parses values.yaml file
-pub struct ValuesParser {}
+pub struct ValuesParser {
+    delimiter: String
+}
 
 impl ValuesParser {
     pub fn new() -> ValuesParser {
-        ValuesParser {}
+        ValuesParser {
+            delimiter: ".".to_string()
+        }
     }
 
-    pub fn parse<P: AsRef<Path>>(&self, values_file: P) -> Result<()> {
-        let content = fs::read_to_string(values_file)?;
-        let values: Value = serde_yaml::from_str(&content)?;
+    pub fn parse<P: AsRef<Path> + Debug + Clone>(&self, values_file: P) -> Result<HelmValues> {
+        let content = fs::read_to_string(values_file.clone())?;
+        let values_map: Value = serde_yaml::from_str(&content)?;
 
-        if let Value::Mapping(values_map) = values {
-            for (key, value) in values_map {
-                println!("Key: {:?}, Value: {:?}", key, value);
+        let values = HelmValues::new();
+        let curr_path = "";
 
-                // If the value is also a mapping, you can recursively enumerate it
-                if let Value::Mapping(sub_map) = value {
-                    enumerate_mapping(sub_map);
-                }
-            }
+        log::debug!("Processing Helm values.yaml: {:?}", values_file.clone());
 
-            Ok(())
+        if let Value::Mapping(values_map) = values_map {
+            self.process_map(&curr_path, &values, &values_map)?;
+
+            return Ok(values);
         }
 
-        Err()
+        Err(ValuesParseError::new("Helm values.yaml should be a map".to_string()).into())
+    }
+
+    fn process_map(&self, parent_path: &str, values: &HelmValues, values_map: &Mapping) -> Result<()> {
+        let curr_path = if parent_path.is_empty() {
+            parent_path.to_string()
+        } else {
+            format!("{}{}", parent_path, self.delimiter)
+        };
+
+        for (key, value) in values_map {
+            let path = format!(
+                "{}{}",
+                curr_path,
+                key.as_str().ok_or(
+                    ValuesParseError::new("Failed to process values.yaml key".to_string())
+                ).unwrap(),
+            );
+
+            // If the value is also a mapping, you can recursively enumerate it
+            if let Value::Mapping(ref nested_map) = value {
+                self.process_map(&path, values, nested_map)?;
+
+                continue;
+            }
+
+            log::debug!(
+                "Processing value {}: {:?}",
+                path,
+                value
+            );
+
+            values.insert(path, value.clone());
+        }
+
+        Ok(())
     }
 }
