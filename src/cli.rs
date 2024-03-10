@@ -15,6 +15,14 @@ const BANNER: &str = r"
                           | |
                           |_|
     🚢 A convenient way to document your Helm charts
+
+Basic Usage:
+    chartpedia gen
+    chartpedia gen -m README.md -v values.yaml
+
+Advanced Usage:
+    chartpedia --config chartpedia.yaml gen -m README.md -v values.yaml
+    chartpedia --debug gen -m README.md -v values.yaml
 ";
 
 #[derive(Parser)]
