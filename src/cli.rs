@@ -14,7 +14,7 @@ const BANNER: &str = r"
  \___|_| |_|\__,_|_|   \__| .__/ \___|\__,_|_|\__,_|
                           | |
                           |_|
-    🚢 A convenient way to document your Helm charts
+    🧭 A convenient way to document your Helm charts
 
 Basic Usage:
     chartpedia gen
