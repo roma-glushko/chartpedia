@@ -19,10 +19,3 @@ regex = "1.10.3"
 anyhow = "1.0.79"
 thiserror = "1.0.57"
 markdown-table = "0.2.0"
-
-[package.metadata.rpm.cargo]
-buildflags = ["--release"]
-target = "x86_64-unknown-linux-musl"
-
-[package.metadata.rpm.targets]
-chartpedia = { path = "/usr/bin/chartpedia" }
