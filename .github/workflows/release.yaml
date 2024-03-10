@@ -20,28 +20,33 @@ jobs:
         uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
+
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Setup MUSL
         if: matrix.os == 'ubuntu-latest'
         run: |
           rustup target add x86_64-unknown-linux-musl
           sudo apt-get -qq install musl-tools
+
       - name: Build for linux
         if: matrix.os == 'ubuntu-latest'
         run: |
           make release_lnx
           cargo install --locked cargo-rpm
-          make release_rpm
+          make release-rpm
+
       - name: Build for macOS
         if: matrix.os == 'macOS-latest'
-        run: make release_mac
+        run: make release-mac
+
       - name: Build for Windows
         if: matrix.os == 'windows-latest'
-        run: make release_win
+        run: make release-win
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: "*.zip\n*.rpm"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}

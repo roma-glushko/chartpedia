@@ -14,8 +14,11 @@ all: test
 run: ## Run the CLI
 	@cargo run
 
-build: ## Build a binary
+build: ## Build a debug binary
 	@cargo build
+
+build-release: ## Build a release binary
+	@cargo build --release
 
 lint: ## Lint the codebase
 	@cargo fmt
