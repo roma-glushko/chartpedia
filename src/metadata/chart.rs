@@ -4,26 +4,26 @@
 */
 
 use std::rc::Rc;
-use crate::metadata::section::Section;
+use crate::metadata::section::SectionMetadata;
 use crate::metadata::value::ValueMetadata;
 
 
 // Metadata defines the general metadata defined in a chart values file
 #[derive(Debug)]
-pub struct Metadata {
-    sections: Vec<Rc<Section>>,
+pub struct ChartMetadata {
+    sections: Vec<Rc<SectionMetadata>>,
     values: Vec<Rc<ValueMetadata>>,
 }
 
-impl Metadata {
-    pub(crate) fn new() -> Metadata {
-        Metadata {
+impl ChartMetadata {
+    pub(crate) fn new() -> ChartMetadata {
+        ChartMetadata {
             sections: Vec::new(),
             values: Vec::new(),
         }
     }
 
-    pub fn add_section(&mut self, section: Rc<Section>) {
+    pub fn add_section(&mut self, section: Rc<SectionMetadata>) {
         self.sections.push(section)
     }
 

@@ -15,8 +15,8 @@ use std::str::FromStr;
 use std::{fmt, io};
 
 use config::Config;
-use crate::metadata::annotations::Metadata;
-use crate::metadata::section::Section;
+use crate::metadata::chart::ChartMetadata;
+use crate::metadata::section::SectionMetadata;
 use crate::metadata::value::ValueMetadata;
 
 /// MetadataParser parses metadata left in values.yaml file
@@ -99,12 +99,12 @@ impl MetadataParser {
         }
     }
 
-    pub fn parse<P: AsRef<Path>>(&self, values_file: P) -> Result<Metadata> {
+    pub fn parse<P: AsRef<Path>>(&self, values_file: P) -> Result<ChartMetadata> {
         let values_file = File::open(values_file)?;
         let reader = io::BufReader::new(values_file);
 
-        let mut metadata = Metadata::new();
-        let mut curr_section: Option<Rc<Section>> = None;
+        let mut metadata = ChartMetadata::new();
+        let mut curr_section: Option<Rc<SectionMetadata>> = None;
         let mut descr_parsing = false;
 
         for line_res in reader.lines() {
@@ -201,9 +201,9 @@ impl MetadataParser {
         None
     }
 
-    fn try_parse_section(&self, line: &str) -> Option<Section> {
+    fn try_parse_section(&self, line: &str) -> Option<SectionMetadata> {
         if let Some(captures) = self.section_regex.captures(line) {
-            return Some(Section::new(captures[1].to_string()));
+            return Some(SectionMetadata::new(captures[1].to_string()));
         }
 
         None

@@ -8,15 +8,15 @@ use crate::metadata::value::ValueMetadata;
 
 // Section defines a param section
 #[derive(Debug)]
-pub struct Section {
+pub struct SectionMetadata {
     name: String,
     descr: RefCell<Vec<String>>,
     chart_values: RefCell<Vec<Rc<ValueMetadata>>>,
 }
 
-impl Section {
-    pub fn new(name: String) -> Section {
-        Section {
+impl SectionMetadata {
+    pub fn new(name: String) -> SectionMetadata {
+        SectionMetadata {
             name,
             descr: RefCell::new(Vec::new()),
             chart_values: RefCell::new(Vec::new()),

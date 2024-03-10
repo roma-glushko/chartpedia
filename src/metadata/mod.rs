@@ -3,7 +3,7 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
-pub mod annotations;
+pub mod chart;
 pub mod parser;
 pub mod section;
 pub mod value;

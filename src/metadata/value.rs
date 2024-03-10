@@ -4,7 +4,7 @@
 */
 
 use std::rc::Rc;
-use crate::metadata::section::Section;
+use crate::metadata::section::SectionMetadata;
 
 // Param defines a chart values
 #[derive(Debug)]
@@ -14,7 +14,7 @@ pub struct ValueMetadata {
     value: Option<String>,
     descr: Option<String>,
     modifiers: Vec<String>,
-    section: Option<Rc<Section>>,
+    section: Option<Rc<SectionMetadata>>,
     should_validate: bool,
     render_in_readme: bool,
     render_in_schema: bool,
@@ -35,7 +35,7 @@ impl ValueMetadata {
         }
     }
 
-    pub fn set_section(&mut self, section: Rc<Section>) {
+    pub fn set_section(&mut self, section: Rc<SectionMetadata>) {
         self.section = Some(section);
     }
 
