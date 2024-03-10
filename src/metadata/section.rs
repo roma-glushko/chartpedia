@@ -2,9 +2,9 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
+use crate::metadata::value::ValueMetadata;
 use std::cell::RefCell;
 use std::rc::Rc;
-use crate::metadata::value::ValueMetadata;
 
 // Section defines a param section
 #[derive(Debug)]

@@ -3,8 +3,8 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
-use std::rc::Rc;
 use crate::metadata::section::SectionMetadata;
+use std::rc::Rc;
 
 // Param defines a chart values
 #[derive(Debug)]
@@ -21,7 +21,11 @@ pub struct ValueMetadata {
 }
 
 impl ValueMetadata {
-    pub(crate) fn new(name: String, modifiers: Vec<String>, descr: Option<String>) -> ValueMetadata {
+    pub(crate) fn new(
+        name: String,
+        modifiers: Vec<String>,
+        descr: Option<String>,
+    ) -> ValueMetadata {
         ValueMetadata {
             name,
             param_type: None,

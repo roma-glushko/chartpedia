@@ -3,10 +3,9 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 
-use std::rc::Rc;
 use crate::metadata::section::SectionMetadata;
 use crate::metadata::value::ValueMetadata;
-
+use std::rc::Rc;
 
 // Metadata defines the general metadata defined in a chart values file
 #[derive(Debug)]

@@ -14,10 +14,10 @@ use std::rc::Rc;
 use std::str::FromStr;
 use std::{fmt, io};
 
-use config::Config;
 use crate::metadata::chart::ChartMetadata;
 use crate::metadata::section::SectionMetadata;
 use crate::metadata::value::ValueMetadata;
+use config::Config;
 
 /// MetadataParser parses metadata left in values.yaml file
 pub struct MetadataParser {
