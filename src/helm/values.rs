@@ -8,13 +8,13 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 
 /// HelmValues holds flatten path to a helm value (e.g. dot-separated path like image.tag) and it's value
-pub struct HelmValues {
+pub struct ChartValues {
     values: RefCell<HashMap<String, Value>>,
 }
 
-impl HelmValues {
-    pub fn new() -> HelmValues {
-        HelmValues {
+impl ChartValues {
+    pub fn new() -> ChartValues {
+        ChartValues {
             values: RefCell::new(HashMap::new()),
         }
     }

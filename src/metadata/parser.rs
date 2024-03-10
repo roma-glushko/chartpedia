@@ -14,8 +14,10 @@ use std::rc::Rc;
 use std::str::FromStr;
 use std::{fmt, io};
 
-use crate::metadata::annotations::{Metadata, Param, Section};
 use config::Config;
+use crate::metadata::annotations::Metadata;
+use crate::metadata::section::Section;
+use crate::metadata::value::ValueMetadata;
 
 /// MetadataParser parses metadata left in values.yaml file
 pub struct MetadataParser {
@@ -111,10 +113,10 @@ impl MetadataParser {
                     if let Some(param) = self.try_parse_param(&line) {
                         let param_rc = Rc::new(param);
 
-                        metadata.add_param(Rc::clone(&param_rc));
+                        metadata.add_value(Rc::clone(&param_rc));
 
                         if let Some(section) = &curr_section {
-                            section.add_param(Rc::clone(&param_rc))
+                            section.add_value(Rc::clone(&param_rc))
                         }
                     }
 
@@ -159,7 +161,7 @@ impl MetadataParser {
         Ok(metadata)
     }
 
-    fn try_parse_param(&self, line: &str) -> Option<Param> {
+    fn try_parse_param(&self, line: &str) -> Option<ValueMetadata> {
         if let Some(captures) = self.param_regex.captures(line) {
             let name = captures[1].to_string();
 
@@ -174,12 +176,12 @@ impl MetadataParser {
 
             let descr = captures[3].to_string();
 
-            return Some(Param::new(name, modifiers, Some(descr)));
+            return Some(ValueMetadata::new(name, modifiers, Some(descr)));
         }
 
         if let Some(captures) = self.skip_regex.captures(line) {
             let name = captures[1].to_string();
-            let mut param = Param::new(name, vec![], None);
+            let mut param = ValueMetadata::new(name, vec![], None);
 
             param.skip();
 
@@ -190,7 +192,7 @@ impl MetadataParser {
             let name = String::from_str(&captures[1]).unwrap();
             let descr = String::from_str(&captures[3]).unwrap();
 
-            let mut param = Param::new(name, vec![], Some(descr));
+            let mut param = ValueMetadata::new(name, vec![], Some(descr));
             param.set_extra();
 
             return Some(param);

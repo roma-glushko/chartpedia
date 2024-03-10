@@ -2,7 +2,7 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-use crate::helm::values::HelmValues;
+use crate::helm::values::ChartValues;
 use anyhow::Result;
 use serde_yaml::{Mapping, Value};
 use std::fmt::Debug;
@@ -40,11 +40,11 @@ impl ValuesParser {
         }
     }
 
-    pub fn parse<P: AsRef<Path> + Debug + Clone>(&self, values_file: P) -> Result<HelmValues> {
+    pub fn parse<P: AsRef<Path> + Debug + Clone>(&self, values_file: P) -> Result<ChartValues> {
         let content = fs::read_to_string(values_file.clone())?;
         let values_map: Value = serde_yaml::from_str(&content)?;
 
-        let values = HelmValues::new();
+        let values = ChartValues::new();
         let curr_path = "";
 
         log::debug!("Processing Helm values.yaml: {:?}", values_file.clone());
@@ -61,7 +61,7 @@ impl ValuesParser {
     fn process_map(
         &self,
         parent_path: &str,
-        values: &HelmValues,
+        values: &ChartValues,
         values_map: &Mapping,
     ) -> Result<()> {
         let curr_path = if parent_path.is_empty() {
