@@ -29,13 +29,13 @@ impl ValuesParseError {
 }
 
 /// ValuesParser parses values.yaml file
-pub struct ValuesParser {
+pub struct ChartValuesParser {
     delimiter: String,
 }
 
-impl ValuesParser {
-    pub fn new() -> ValuesParser {
-        ValuesParser {
+impl ChartValuesParser {
+    pub fn new() -> ChartValuesParser {
+        ChartValuesParser {
             delimiter: ".".to_string(),
         }
     }

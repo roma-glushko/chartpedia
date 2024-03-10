@@ -9,7 +9,7 @@ use log::LevelFilter;
 fn create_format_dispatch(colors: ColoredLevelConfig) -> Dispatch {
     Dispatch::new().format(move |out, message, record| {
         out.finish(format_args!(
-            "{} {:5} [{}] \x1B[1m -- {}\x1B[0m",
+            "{} {:5} [{}]\x1B[1m -- {}\x1B[0m",
             chrono::Local::now().format("%H:%M:%S%.3f"),
             colors.color(record.level()),
             record.target(),

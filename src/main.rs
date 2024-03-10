@@ -14,9 +14,9 @@ mod metadata;
 use crate::cli::Commands;
 use crate::config::Config;
 
-use crate::helm::parser::ValuesParser;
+use crate::helm::parser::ChartValuesParser;
 use crate::markdown::render::MarkdownRenderer;
-use crate::metadata::parser::MetadataParser;
+use crate::metadata::parser::ChartMetadataParser;
 use logging::setup_logging;
 
 fn main() {
@@ -36,8 +36,8 @@ fn main() {
 
     match &cli.command {
         Some(Commands::Gen { markdown, values }) => {
-            let metadata_parser = MetadataParser::new(&config);
-            let values_parser = ValuesParser::new();
+            let metadata_parser = ChartMetadataParser::new(&config);
+            let values_parser = ChartValuesParser::new();
             let renderer = MarkdownRenderer::new(&config);
 
             let _ = values_parser.parse(values);

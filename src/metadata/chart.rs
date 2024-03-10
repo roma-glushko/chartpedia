@@ -7,7 +7,7 @@ use crate::metadata::section::SectionMetadata;
 use crate::metadata::value::ValueMetadata;
 use std::rc::Rc;
 
-// Metadata defines the general metadata defined in a chart values file
+/// ChartMetadata defines the general metadata defined in a chart values file
 #[derive(Debug)]
 pub struct ChartMetadata {
     sections: Vec<Rc<SectionMetadata>>,

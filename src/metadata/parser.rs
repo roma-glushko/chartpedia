@@ -19,17 +19,6 @@ use crate::metadata::section::SectionMetadata;
 use crate::metadata::value::ValueMetadata;
 use config::Config;
 
-/// MetadataParser parses metadata left in values.yaml file
-pub struct MetadataParser {
-    param_regex: Regex,
-    section_regex: Regex,
-    descr_start_regex: Regex,
-    descr_content_regex: Regex,
-    descr_end_regex: Regex,
-    skip_regex: Regex,
-    extra_regex: Regex,
-}
-
 #[derive(Debug)]
 struct ParsingError {
     message: String,
@@ -44,8 +33,19 @@ impl Display for ParsingError {
 // Implement the std::error::Error trait for your custom error type.
 impl Error for ParsingError {}
 
-impl MetadataParser {
-    pub fn new(config: &Config) -> MetadataParser {
+/// MetadataParser parses metadata left in values.yaml file
+pub struct ChartMetadataParser {
+    param_regex: Regex,
+    section_regex: Regex,
+    descr_start_regex: Regex,
+    descr_content_regex: Regex,
+    descr_end_regex: Regex,
+    skip_regex: Regex,
+    extra_regex: Regex,
+}
+
+impl ChartMetadataParser {
+    pub fn new(config: &Config) -> ChartMetadataParser {
         let param_regex = Regex::new(&format!(
             r"^\\s*{}\\s*{}\\s*([^\\s]+)\\s*(\\[.*?\\])?\\s*(.*)$",
             regex::escape(&config.comments.format),
@@ -88,7 +88,7 @@ impl MetadataParser {
         ))
         .unwrap();
 
-        MetadataParser {
+        ChartMetadataParser {
             param_regex,
             section_regex,
             descr_start_regex,
