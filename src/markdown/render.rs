@@ -47,10 +47,7 @@ impl MarkdownRenderer {
         let mut next_section_pattern: Option<Regex> = None;
         let mut next_section_found = false;
 
-        log::debug!(
-            "Updating markdown file: {:?}",
-            markdown_path.to_string_lossy()
-        );
+        log::debug!("Updating markdown file: {:?}", markdown_path);
 
         for (line_idx, read_res) in reader.lines().enumerate() {
             match read_res {
@@ -69,13 +66,13 @@ impl MarkdownRenderer {
 
                         param_section_level = Some(section_level);
 
-                        let param_table = self.chart_metadata_renderer.render(
+                        let rendered_chart_metadata = self.chart_metadata_renderer.render(
                             chart_metadata,
                             &format!("{}#", param_section_level.clone().unwrap().as_str()),
                         )?;
 
                         new_content.push(format!("{}\n", line));
-                        new_content.push(param_table.to_string());
+                        new_content.push(rendered_chart_metadata);
 
                         continue;
                     }

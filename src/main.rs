@@ -38,7 +38,7 @@ fn main() {
         Some(Commands::Gen { markdown, values }) => {
             let metadata_parser = ChartMetadataParser::new(&config);
             let values_parser = ChartValuesParser::new();
-            let renderer = MarkdownRenderer::new(&config);
+            let markdown_renderer = MarkdownRenderer::new(&config);
 
             let _ = values_parser.parse(values);
 
@@ -51,7 +51,7 @@ fn main() {
                 }
             };
 
-            let _ = renderer.render(markdown, &chart_metadata);
+            let _ = markdown_renderer.render(markdown, &chart_metadata);
 
             ()
         }

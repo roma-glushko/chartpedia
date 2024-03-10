@@ -3,8 +3,10 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 use crate::metadata::chart::ChartMetadata;
+use crate::metadata::section::SectionMetadata;
 use anyhow::Result;
 use markdown_table::{Heading, MarkdownTable};
+use std::rc::Rc;
 
 pub struct ChartMetadataRenderer {}
 
@@ -14,8 +16,40 @@ impl ChartMetadataRenderer {
     }
 
     pub fn render(&self, chart_metadata: &ChartMetadata, section_header: &str) -> Result<String> {
-        for section in chart_metadata.sections() {}
+        let mut rendered_metadata = String::with_capacity(100);
 
+        for section in chart_metadata.sections() {
+            rendered_metadata.push_str(&self.render_section(section, section_header)?)
+        }
+
+        Ok(rendered_metadata)
+    }
+
+    fn render_section(&self, section: Rc<SectionMetadata>, section_header: &str) -> Result<String> {
+        let mut rendered_section = String::with_capacity(20);
+
+        rendered_section.push_str("\r\n");
+
+        // section header
+        rendered_section.push_str(&format!("{} {}\r\n\n", section_header, &section.name()));
+
+        // section description
+        let descr = section.descr();
+
+        if !descr.is_empty() {
+            rendered_section.push_str(&format!("{} \r\n\n", descr))
+        }
+
+        let values = section.values();
+
+        if !values.is_empty() {
+            rendered_section.push_str(&self.render_section_values()?)
+        }
+
+        Ok(rendered_section)
+    }
+
+    fn render_section_values(&self) -> Result<String> {
         let mut param_table = MarkdownTable::new(vec![vec![
             "`autoscaling.enabled`".to_string(),
             "Enable autoscaling for replicas (recommended if load is variable)".to_string(),

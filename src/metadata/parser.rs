@@ -34,6 +34,7 @@ impl Display for ParsingError {
 impl Error for ParsingError {}
 
 /// MetadataParser parses metadata left in values.yaml file
+#[derive(Debug)]
 pub struct ChartMetadataParser {
     param_regex: Regex,
     section_regex: Regex,
@@ -47,42 +48,42 @@ pub struct ChartMetadataParser {
 impl ChartMetadataParser {
     pub fn new(config: &Config) -> ChartMetadataParser {
         let param_regex = Regex::new(&format!(
-            r"^\\s*{}\\s*{}\\s*([^\\s]+)\\s*(\\[.*?\\])?\\s*(.*)$",
+            r"^\s*{}\s*{}\s*([^\s]+)\s*(\[.*?\])?\s*(.*)$",
             regex::escape(&config.comments.format),
             regex::escape(&config.tags.param)
         ))
         .unwrap();
         let section_regex = Regex::new(&format!(
-            r"^\\s*{}\\s*{}\\s*(.*)$",
+            r"^\s*{}\s*{}\s*(.*)$",
             regex::escape(&config.comments.format),
             regex::escape(&config.tags.section)
         ))
         .unwrap();
         let descr_start_regex = Regex::new(&format!(
-            r"^\\s*{}\\s*{}\\s*(.*)",
+            r"^\s*{}\s*{}\s*(.*)",
             regex::escape(&config.comments.format),
             regex::escape(&config.tags.description_start)
         ))
         .unwrap();
         let descr_content_regex = Regex::new(&format!(
-            r"^\\s*{}\\s*(.*)",
+            r"^\s*{}\s*(.*)",
             regex::escape(&config.comments.format)
         ))
         .unwrap();
         let descr_end_regex = Regex::new(&format!(
-            r"^\\s*{}\\s*{}\\s*(.*)",
+            r"^\s*{}\s*{}\s*(.*)",
             regex::escape(&config.comments.format),
             regex::escape(&config.tags.description_end)
         ))
         .unwrap();
         let skip_regex = Regex::new(&format!(
-            r"^\\s*{}\\s*{}\\s*([^\\s]+)\\s*(.*)$",
+            r"^\s*{}\s*{}\s*([^\s]+)\s*(.*)$",
             regex::escape(&config.comments.format),
             regex::escape(&config.tags.skip)
         ))
         .unwrap();
         let extra_regex = Regex::new(&format!(
-            r"^\\s*{}\\s*{}\\s*([^\\s]+)\\s*(\\[.*?\\])?\\s*(.*)$",
+            r"^\s*{}\s*{}\s*([^\s]+)\s*(\[.*?\])?\s*(.*)$",
             regex::escape(&config.comments.format),
             regex::escape(&config.tags.extra)
         ))
@@ -101,47 +102,63 @@ impl ChartMetadataParser {
 
     pub fn parse<P: AsRef<Path>>(&self, values_file: P) -> Result<ChartMetadata> {
         let values_file = File::open(values_file)?;
-        let reader = io::BufReader::new(values_file);
+        let reader = io::BufReader::new(&values_file);
 
         let mut metadata = ChartMetadata::new();
         let mut curr_section: Option<Rc<SectionMetadata>> = None;
         let mut descr_parsing = false;
 
-        for line_res in reader.lines() {
+        log::debug!("Parsing chart metadata in values.yaml: {:?}", values_file);
+
+        for (line_idx, line_res) in reader.lines().enumerate() {
             match line_res {
                 Ok(line) => {
-                    if let Some(param) = self.try_parse_param(&line) {
-                        let param_rc = Rc::new(param);
+                    if let Some(value) = self.try_parse_value_metadata(&line) {
+                        let value_rc = Rc::new(value);
 
-                        metadata.add_value(Rc::clone(&param_rc));
+                        log::debug!(
+                            "Found chart value metadata at line {}: {:?}",
+                            line_idx + 1,
+                            value_rc,
+                        );
+
+                        metadata.add_value(Rc::clone(&value_rc));
 
                         if let Some(section) = &curr_section {
-                            section.add_value(Rc::clone(&param_rc))
+                            section.add_value(Rc::clone(&value_rc))
                         }
                     }
 
-                    if let Some(section) = self.try_parse_section(&line) {
+                    if let Some(section) = self.try_parse_section_metadata(&line) {
                         let section_rc = Rc::new(section);
                         metadata.add_section(Rc::clone(&section_rc));
+
+                        log::debug!(
+                            "Found chart value section metadata at line {}: {:?}",
+                            line_idx + 1,
+                            section_rc,
+                        );
 
                         curr_section = Some(Rc::clone(&section_rc))
                     }
 
                     if let Some(has_end) = self.has_descr_end(&line) {
                         if has_end && curr_section.is_some() && descr_parsing {
-                            descr_parsing = false
+                            descr_parsing = false;
                         }
                     }
 
-                    if let Some(descr_line) = self.try_parse_descr_content(&line) {
-                        match &curr_section {
-                            Some(section) => section.add_descr(descr_line),
-                            None => todo!(),
+                    if curr_section.is_some() && descr_parsing {
+                        if let Some(descr_line) = self.try_parse_descr_content(&line) {
+                            match &curr_section {
+                                Some(section) => section.add_descr(descr_line),
+                                None => todo!(),
+                            }
                         }
                     }
 
-                    if let Some(descr_start) = self.try_parse_descr_start(&line) {
-                        if curr_section.is_some() && !descr_parsing {
+                    if curr_section.is_some() && !descr_parsing {
+                        if let Some(descr_start) = self.try_parse_descr_start(&line) {
                             descr_parsing = true;
 
                             if !descr_start.is_empty() {
@@ -161,17 +178,21 @@ impl ChartMetadataParser {
         Ok(metadata)
     }
 
-    fn try_parse_param(&self, line: &str) -> Option<ValueMetadata> {
+    fn try_parse_value_metadata(&self, line: &str) -> Option<ValueMetadata> {
         if let Some(captures) = self.param_regex.captures(line) {
             let name = captures[1].to_string();
 
-            let modifiers = match captures[2].to_string() {
-                mod_str if !mod_str.is_empty() => mod_str
-                    .trim_matches(|c| c == '[' || c == ']')
-                    .split(',')
-                    .map(|m| m.trim().to_string())
-                    .collect(),
-                _ => vec![],
+            let modifiers = match captures.get(2) {
+                Some(mod_str) => match mod_str {
+                    mod_str if !mod_str.is_empty() => mod_str
+                        .as_str()
+                        .trim_matches(|c| c == '[' || c == ']')
+                        .split(',')
+                        .map(|m| m.trim().to_string())
+                        .collect(),
+                    _ => vec![],
+                },
+                None => vec![],
             };
 
             let descr = captures[3].to_string();
@@ -201,7 +222,7 @@ impl ChartMetadataParser {
         None
     }
 
-    fn try_parse_section(&self, line: &str) -> Option<SectionMetadata> {
+    fn try_parse_section_metadata(&self, line: &str) -> Option<SectionMetadata> {
         if let Some(captures) = self.section_regex.captures(line) {
             return Some(SectionMetadata::new(captures[1].to_string()));
         }
