@@ -14,7 +14,7 @@ use std::rc::Rc;
 use std::str::FromStr;
 use std::{fmt, io};
 
-use crate::metadata::metadata::{Metadata, Param, Section};
+use crate::metadata::annotations::{Metadata, Param, Section};
 use config::Config;
 
 /// MetadataParser parses metadata left in values.yaml file

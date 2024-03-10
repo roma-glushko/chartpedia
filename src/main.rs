@@ -51,7 +51,7 @@ fn main() {
                 }
             };
 
-            let _ = renderer.render(&markdown);
+            let _ = renderer.render(markdown);
 
             ()
         }
