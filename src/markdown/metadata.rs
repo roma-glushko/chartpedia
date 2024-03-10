@@ -4,6 +4,7 @@
 */
 use crate::metadata::chart::ChartMetadata;
 use crate::metadata::section::SectionMetadata;
+use crate::metadata::value::ValueMetadata;
 use anyhow::Result;
 use markdown_table::{Heading, MarkdownTable};
 use std::rc::Rc;
@@ -43,25 +44,32 @@ impl ChartMetadataRenderer {
         let values = section.values();
 
         if !values.is_empty() {
-            rendered_section.push_str(&self.render_section_values()?)
+            rendered_section.push_str(&self.render_section_values(&values)?)
         }
 
         Ok(rendered_section)
     }
 
-    fn render_section_values(&self) -> Result<String> {
-        let mut param_table = MarkdownTable::new(vec![vec![
-            "`autoscaling.enabled`".to_string(),
-            "Enable autoscaling for replicas (recommended if load is variable)".to_string(),
-            "`false`".to_string(),
-        ]]);
+    fn render_section_values(&self, values: &[Rc<ValueMetadata>]) -> Result<String> {
+        let table_rows = values
+            .iter()
+            .map(|value| {
+                vec![
+                    format!("`{}`", value.name()),
+                    value.descr().clone().unwrap_or_default(),
+                    format!("`{}`", "{}"),
+                ]
+            })
+            .collect();
 
-        param_table.with_headings(vec![
+        let mut values_table = MarkdownTable::new(table_rows);
+
+        values_table.with_headings(vec![
             Heading::new("Name".to_string(), None),
             Heading::new("Description".to_string(), None),
             Heading::new("Value".to_string(), None),
         ]);
 
-        param_table.as_markdown()
+        values_table.as_markdown()
     }
 }

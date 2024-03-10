@@ -4,15 +4,16 @@
 */
 
 use crate::metadata::section::SectionMetadata;
+use std::cell::{Ref, RefCell};
 use std::rc::Rc;
 
 // Param defines a chart values
 #[derive(Debug)]
 pub struct ValueMetadata {
-    name: String,
-    param_type: Option<String>,
+    name: RefCell<String>,
+    value_type: Option<String>,
     value: Option<String>,
-    descr: Option<String>,
+    descr: RefCell<Option<String>>,
     modifiers: Vec<String>,
     section: Option<Rc<SectionMetadata>>,
     should_validate: bool,
@@ -27,16 +28,24 @@ impl ValueMetadata {
         descr: Option<String>,
     ) -> ValueMetadata {
         ValueMetadata {
-            name,
-            param_type: None,
+            name: RefCell::new(name),
+            value_type: None,
             value: None,
             modifiers,
-            descr,
+            descr: RefCell::new(descr),
             section: None,
             should_validate: true,
             render_in_readme: true,
             render_in_schema: true,
         }
+    }
+
+    pub fn name(&self) -> Ref<String> {
+        self.name.borrow()
+    }
+
+    pub fn descr(&self) -> Ref<Option<String>> {
+        self.descr.borrow()
     }
 
     pub fn set_section(&mut self, section: Rc<SectionMetadata>) {

@@ -248,7 +248,11 @@ impl ChartMetadataParser {
 
     fn try_parse_descr_start(&self, line: &str) -> Option<String> {
         if let Some(captures) = self.descr_start_regex.captures(line) {
-            return Some(captures[1].to_string());
+            let descr_start = captures[1].to_string();
+
+            if !descr_start.is_empty() {
+                return Some(descr_start);
+            }
         }
 
         None
