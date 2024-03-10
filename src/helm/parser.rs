@@ -2,13 +2,13 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-use anyhow::{Result};
-use serde_yaml::{Mapping, Value};
-use std::{fmt, fs};
-use std::fmt::{Debug, Display};
-use std::path::Path;
-use thiserror::Error;
 use crate::helm::values::HelmValues;
+use anyhow::Result;
+use serde_yaml::{Mapping, Value};
+use std::fmt::Debug;
+use std::path::Path;
+use std::{fmt, fs};
+use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub struct ValuesParseError {
@@ -30,13 +30,13 @@ impl ValuesParseError {
 
 /// ValuesParser parses values.yaml file
 pub struct ValuesParser {
-    delimiter: String
+    delimiter: String,
 }
 
 impl ValuesParser {
     pub fn new() -> ValuesParser {
         ValuesParser {
-            delimiter: ".".to_string()
+            delimiter: ".".to_string(),
         }
     }
 
@@ -58,7 +58,12 @@ impl ValuesParser {
         Err(ValuesParseError::new("Helm values.yaml should be a map".to_string()).into())
     }
 
-    fn process_map(&self, parent_path: &str, values: &HelmValues, values_map: &Mapping) -> Result<()> {
+    fn process_map(
+        &self,
+        parent_path: &str,
+        values: &HelmValues,
+        values_map: &Mapping,
+    ) -> Result<()> {
         let curr_path = if parent_path.is_empty() {
             parent_path.to_string()
         } else {
@@ -69,9 +74,11 @@ impl ValuesParser {
             let path = format!(
                 "{}{}",
                 curr_path,
-                key.as_str().ok_or(
-                    ValuesParseError::new("Failed to process values.yaml key".to_string())
-                ).unwrap(),
+                key.as_str()
+                    .ok_or(ValuesParseError::new(
+                        "Failed to process values.yaml key".to_string()
+                    ))
+                    .unwrap(),
             );
 
             // If the value is also a mapping, you can recursively enumerate it
@@ -81,11 +88,7 @@ impl ValuesParser {
                 continue;
             }
 
-            log::debug!(
-                "Processing value {}: {:?}",
-                path,
-                value
-            );
+            log::debug!("Processing value {}: {:?}", path, value);
 
             values.insert(path, value.clone());
         }
