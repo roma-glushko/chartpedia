@@ -37,7 +37,8 @@ pub(crate) fn setup_logging(debug: bool) {
         .error(Color::BrightRed);
 
     let dispatch = Dispatch::new()
-        .chain(create_format_dispatch(Some(logging_colors)).chain(std::io::stdout()));
+        .chain(create_format_dispatch(Some(logging_colors))
+        .chain(std::io::stdout()));
 
     dispatch.apply().expect("Couldn't start logger");
 
