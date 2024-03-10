@@ -50,7 +50,7 @@ impl ValuesParser {
         log::debug!("Processing Helm values.yaml: {:?}", values_file.clone());
 
         if let Value::Mapping(values_map) = values_map {
-            self.process_map(&curr_path, &values, &values_map)?;
+            self.process_map(curr_path, &values, &values_map)?;
 
             return Ok(values);
         }
