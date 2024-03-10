@@ -126,9 +126,9 @@ impl MarkdownRenderer {
 
     fn render_params(&self) -> Result<String> {
         let mut param_table = MarkdownTable::new(vec![vec![
-            "test".to_string(),
-            "1".to_string(),
-            "2".to_string(),
+            "`autoscaling.enabled`".to_string(),
+            "Enable autoscaling for replicas (recommended if load is variable)".to_string(),
+            "`false`".to_string(),
         ]]);
 
         param_table.with_headings(vec![
