@@ -22,6 +22,10 @@ impl ChartMetadata {
         }
     }
 
+    pub fn sections(&self) -> Vec<Rc<SectionMetadata>> {
+        self.sections.clone()
+    }
+
     pub fn add_section(&mut self, section: Rc<SectionMetadata>) {
         self.sections.push(section)
     }

@@ -4,9 +4,11 @@
 */
 
 use crate::config::Config;
+use crate::markdown::metadata::ChartMetadataRenderer;
+use crate::metadata::chart::ChartMetadata;
 use anyhow::Result;
-use markdown_table::{Heading, MarkdownTable};
 use regex::Regex;
+use std::fmt::format;
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
@@ -15,6 +17,7 @@ use std::path::PathBuf;
 
 pub struct MarkdownRenderer {
     param_section_pattern: Regex,
+    chart_metadata_renderer: ChartMetadataRenderer,
 }
 
 impl MarkdownRenderer {
@@ -25,13 +28,16 @@ impl MarkdownRenderer {
         ))
         .unwrap();
 
+        let chart_metadata_renderer = ChartMetadataRenderer::new();
+
         MarkdownRenderer {
             param_section_pattern,
+            chart_metadata_renderer,
         }
     }
 
     /// Modify the given markdown file (e.g. README.md) to update the parameters section
-    pub fn render(&self, markdown_path: &PathBuf) -> Result<()> {
+    pub fn render(&self, markdown_path: &PathBuf, chart_metadata: &ChartMetadata) -> Result<()> {
         let md_file = File::open(markdown_path)?;
         let reader = io::BufReader::new(md_file);
 
@@ -63,7 +69,10 @@ impl MarkdownRenderer {
 
                         param_section_level = Some(section_level);
 
-                        let param_table = self.render_params()?;
+                        let param_table = self.chart_metadata_renderer.render(
+                            chart_metadata,
+                            &format!("{}#", param_section_level.clone().unwrap().as_str()),
+                        )?;
 
                         new_content.push(format!("{}\n", line));
                         new_content.push(param_table.to_string());
@@ -122,21 +131,5 @@ impl MarkdownRenderer {
         }
 
         None
-    }
-
-    fn render_params(&self) -> Result<String> {
-        let mut param_table = MarkdownTable::new(vec![vec![
-            "`autoscaling.enabled`".to_string(),
-            "Enable autoscaling for replicas (recommended if load is variable)".to_string(),
-            "`false`".to_string(),
-        ]]);
-
-        param_table.with_headings(vec![
-            Heading::new("Name".to_string(), None),
-            Heading::new("Description".to_string(), None),
-            Heading::new("Value".to_string(), None),
-        ]);
-
-        param_table.as_markdown()
     }
 }

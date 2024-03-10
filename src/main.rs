@@ -42,7 +42,7 @@ fn main() {
 
             let _ = values_parser.parse(values);
 
-            let _ = match metadata_parser.parse(values) {
+            let chart_metadata = match metadata_parser.parse(values) {
                 Ok(metadata) => metadata,
                 Err(err) => {
                     log::error!("Failed to parse values metadata: {}", err);
@@ -51,7 +51,7 @@ fn main() {
                 }
             };
 
-            let _ = renderer.render(markdown);
+            let _ = renderer.render(markdown, &chart_metadata);
 
             ()
         }
