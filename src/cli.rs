@@ -37,7 +37,7 @@ pub struct Cli {
     )]
     pub debug: bool,
 
-    /// Config (if empty, .chartpedia.yaml, .chartpedia.yml, .chartpedia.json are tried to be loaded from the current working directory)
+    /// Config (if empty, chartpedia.yaml, chartpedia.yml, chartpedia.json are tried to be loaded from the current working directory)
     #[arg(short, long, value_name = "CONFIG_PATH")]
     pub config_path: Option<PathBuf>,
 
@@ -52,7 +52,7 @@ fn validate_file_exists(file_path: &str) -> Result<PathBuf, String> {
         Ok(path)
     } else {
         Err(format!(
-            "The file \"{}\" does not exist.",
+            "The file \"{}\" does not exist",
             path.to_string_lossy()
         ))
     }

@@ -122,15 +122,15 @@ impl Config {
 
     fn load_default_paths() -> Result<Config> {
         let default_paths = vec![
-            Path::new(".chartpedia.yaml"),
-            Path::new(".chartpedia.yml"),
-            Path::new(".chartpedia.json"),
+            Path::new("chartpedia.yaml"),
+            Path::new("chartpedia.yml"),
+            Path::new("chartpedia.json"),
         ];
 
         log::debug!("Trying to find under default path");
 
         for path in default_paths {
-            log::debug!("- Trying to load {}", &path.to_string_lossy());
+            log::debug!("-- Trying to load {}", &path.to_string_lossy());
 
             if !path.exists() {
                 continue;
