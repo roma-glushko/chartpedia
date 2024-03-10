@@ -2,10 +2,8 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-use clap::builder::TypedValueParser;
 use clap::{Parser, Subcommand};
-use log::LevelFilter;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 const BANNER: &str = r"
       _                _                  _ _
@@ -23,15 +21,13 @@ const BANNER: &str = r"
 #[command(author, author, version)]
 #[command(about = BANNER)]
 pub struct Cli {
-    /// Verbosity
+    /// Debug
     #[arg(
     short,
     long,
-    default_value_t = LevelFilter::Info,
-    value_parser = clap::builder::PossibleValuesParser::new(["TRACE", "DEBUG", "INFO", "WARN", "ERROR"])
-    .map(|s| s.parse::<LevelFilter>().unwrap()),
+    action = clap::ArgAction::SetTrue
     )]
-    pub verbosity: LevelFilter,
+    pub debug: bool,
 
     /// Config (if empty, .chartpedia.yaml, .chartpedia.yml, .chartpedia.json are tried to be loaded from the current working directory)
     #[arg(short, long, value_name = "CONFIG_PATH")]
@@ -47,7 +43,10 @@ fn validate_file_exists(file_path: &str) -> Result<PathBuf, String> {
     if path.exists() {
         Ok(path)
     } else {
-        Err(format!("The file \"{}\" does not exist.", path.to_string_lossy()))
+        Err(format!(
+            "The file \"{}\" does not exist.",
+            path.to_string_lossy()
+        ))
     }
 }
 
@@ -71,7 +70,7 @@ pub enum Commands {
         #[arg(short, long, default_value="README.md", value_parser=validate_file_exists)]
         markdown: PathBuf,
         /// Fail if there are any undocumented chart values
-        #[arg(short, long, action, default_value="true")]
+        #[arg(short, long, action, default_value = "true")]
         no_missing: bool,
     },
 }
