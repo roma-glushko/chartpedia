@@ -1,6 +1,7 @@
 [package]
 name = "chartpedia"
 version = "0.0.1"
+description = "📚 Document your helm chart values with ease"
 edition = "2021"
 authors = ["Roman Hlushko"]
 
