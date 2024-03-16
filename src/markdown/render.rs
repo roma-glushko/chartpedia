@@ -8,7 +8,6 @@ use crate::markdown::metadata::ChartMetadataRenderer;
 use crate::metadata::chart::ChartMetadata;
 use anyhow::Result;
 use regex::Regex;
-use std::fmt::format;
 use std::fs::File;
 use std::io;
 use std::io::BufRead;

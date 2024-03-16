@@ -25,7 +25,7 @@ Advanced Usage:
     chartpedia --debug gen -m README.md -v values.yaml
 ";
 
-#[derive(Parser)]
+#[derive(Parser, Debug)]
 #[command(author, author, version)]
 #[command(about = BANNER)]
 pub struct Cli {
@@ -58,7 +58,7 @@ fn validate_file_exists(file_path: &str) -> Result<PathBuf, String> {
     }
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 pub enum Commands {
     /// Generate chart values documentation
     Gen {

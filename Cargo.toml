@@ -7,6 +7,11 @@ readme = "README.md"
 edition = "2021"
 authors = ["Roman Hlushko"]
 
+[[bin]]
+name = "chartpedia"
+path = "src/main.rs"
+test = true
+
 [dependencies]
 clap = { version = "4.5.0", features = ["derive"] }
 fern = { version = "0.6.2", features = ["colored"] }
@@ -19,3 +24,6 @@ regex = "1.10.3"
 anyhow = "1.0.79"
 thiserror = "1.0.57"
 markdown-table = "0.2.0"
+
+[dev-dependencies]
+tempdir = "0.3.7"

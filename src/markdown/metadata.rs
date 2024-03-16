@@ -44,7 +44,7 @@ impl ChartMetadataRenderer {
         let values = section.values();
 
         if !values.is_empty() {
-            rendered_section.push_str(&self.render_section_values(&values)?)
+            rendered_section.push_str(&self.render_section_values(&values)?);
         }
 
         Ok(rendered_section)
@@ -53,11 +53,12 @@ impl ChartMetadataRenderer {
     fn render_section_values(&self, values: &[Rc<ValueMetadata>]) -> Result<String> {
         let table_rows = values
             .iter()
+            .filter(|row| !row.has_skipped())
             .map(|value| {
                 vec![
                     format!("`{}`", value.name()),
                     value.descr().clone().unwrap_or_default(),
-                    format!("`{}`", "{}"),
+                    format!("`{}`", "{}"),  // TODO: implement
                 ]
             })
             .collect();

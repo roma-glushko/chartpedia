@@ -96,3 +96,9 @@ impl ChartValuesParser {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+}

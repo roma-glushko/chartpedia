@@ -4,7 +4,7 @@
 */
 use clap::Parser;
 use std::process;
-mod cli;
+pub mod cli;
 mod config;
 mod helm;
 mod logging;
@@ -32,6 +32,7 @@ fn main() {
             process::exit(1);
         }
     };
+
     log::debug!("Config is loaded");
 
     match &cli.command {
