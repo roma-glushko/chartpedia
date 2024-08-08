@@ -20,6 +20,7 @@ fn create_format_dispatch(colors: ColoredLevelConfig) -> Dispatch {
 
 pub(crate) fn setup_logging(debug: bool) {
     let logging_colors = ColoredLevelConfig::new()
+        .trace(Color::BrightBlack)
         .debug(Color::BrightBlack)
         .info(Color::Black)
         .warn(Color::BrightYellow)
@@ -33,7 +34,7 @@ pub(crate) fn setup_logging(debug: bool) {
     let mut level = LevelFilter::Info;
 
     if debug {
-        level = LevelFilter::Debug;
+        level = LevelFilter::Trace;
     }
 
     log::set_max_level(level)

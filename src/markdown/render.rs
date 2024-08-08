@@ -2,8 +2,8 @@
 * Copyright 2024, Roma Hlushko
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use crate::config::Config;
+use crate::helm::values::ChartValues;
 use crate::markdown::metadata::ChartMetadataRenderer;
 use crate::metadata::chart::ChartMetadata;
 use anyhow::Result;
@@ -36,7 +36,12 @@ impl MarkdownRenderer {
     }
 
     /// Modify the given markdown file (e.g. README.md) to update the parameters section
-    pub fn render(&self, markdown_path: &PathBuf, chart_metadata: &ChartMetadata) -> Result<()> {
+    pub fn render(
+        &self,
+        markdown_path: &PathBuf,
+        chart_metadata: &ChartMetadata,
+        chat_values: &ChartValues,
+    ) -> Result<()> {
         let md_file = File::open(markdown_path)?;
         let reader = io::BufReader::new(md_file);
 
@@ -67,6 +72,7 @@ impl MarkdownRenderer {
 
                         let rendered_chart_metadata = self.chart_metadata_renderer.render(
                             chart_metadata,
+                            chat_values,
                             &format!("{}#", param_section_level.clone().unwrap().as_str()),
                         )?;
 
@@ -81,9 +87,9 @@ impl MarkdownRenderer {
                             if section_pattern.is_match(&line) {
                                 next_section_found = true;
 
-                                log::debug!("The next section is found at line {}", line_idx + 1,);
+                                log::trace!("The next section is found at line {}", line_idx + 1,);
                             } else {
-                                log::debug!(
+                                log::trace!(
                                     "Skip line {} (the old parameters section): {}",
                                     line_idx + 1,
                                     line
@@ -93,7 +99,7 @@ impl MarkdownRenderer {
                         }
                     }
 
-                    log::debug!("Keep line {}: {}", line_idx + 1, line);
+                    log::trace!("Keep line {}: {}", line_idx + 1, line);
                     new_content.push(line);
                 }
                 Err(_err) => {

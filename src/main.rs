@@ -41,7 +41,14 @@ fn main() {
             let values_parser = ChartValuesParser::new();
             let markdown_renderer = MarkdownRenderer::new(&config);
 
-            let _ = values_parser.parse(values);
+            let chart_values = match values_parser.parse(values) {
+                Ok(values) => values,
+                Err(err) => {
+                    log::error!("Failed to parse values: {}", err);
+
+                    process::exit(1);
+                }
+            };
 
             let chart_metadata = match metadata_parser.parse(values) {
                 Ok(metadata) => metadata,
@@ -52,9 +59,7 @@ fn main() {
                 }
             };
 
-            let _ = markdown_renderer.render(markdown, &chart_metadata);
-
-            ()
+            let _ = markdown_renderer.render(markdown, &chart_metadata, &chart_values);
         }
         Some(Commands::Check {
             values,
@@ -62,8 +67,6 @@ fn main() {
             no_missing: _,
         }) => {
             println!("Lint: {}", values.to_string_lossy());
-
-            ()
         }
         None => (),
     }

@@ -28,16 +28,14 @@ impl ValuesParseError {
     }
 }
 
+const VALUE_PATH_DELIMITER: &str = ".";
+
 /// ValuesParser parses values.yaml file
-pub struct ChartValuesParser {
-    delimiter: String,
-}
+pub struct ChartValuesParser {}
 
 impl ChartValuesParser {
     pub fn new() -> ChartValuesParser {
-        ChartValuesParser {
-            delimiter: ".".to_string(),
-        }
+        ChartValuesParser {}
     }
 
     pub fn parse<P: AsRef<Path> + Debug + Clone>(&self, values_file: P) -> Result<ChartValues> {
@@ -67,8 +65,19 @@ impl ChartValuesParser {
         let curr_path = if parent_path.is_empty() {
             parent_path.to_string()
         } else {
-            format!("{}{}", parent_path, self.delimiter)
+            format!("{}{}", parent_path, VALUE_PATH_DELIMITER)
         };
+
+        if values_map.is_empty() {
+            log::debug!("Found empty leaf map: {:?}", curr_path);
+
+            return Ok(values.insert(
+                curr_path.trim_end_matches(VALUE_PATH_DELIMITER).to_string(),
+                Value::Mapping(Mapping::new())),
+            );
+        }
+
+        log::debug!("Parsing map: {:?}", curr_path);
 
         for (key, value) in values_map {
             let path = format!(
@@ -77,8 +86,7 @@ impl ChartValuesParser {
                 key.as_str()
                     .ok_or(ValuesParseError::new(
                         "Failed to process values.yaml key".to_string()
-                    ))
-                    .unwrap(),
+                    ))?,
             );
 
             // If the value is also a mapping, you can recursively enumerate it
@@ -88,7 +96,7 @@ impl ChartValuesParser {
                 continue;
             }
 
-            log::debug!("Processing value {}: {:?}", path, value);
+            log::trace!("Processing value {}: {:?}", path, value);
 
             values.insert(path, value.clone());
         }
@@ -100,5 +108,4 @@ impl ChartValuesParser {
 #[cfg(test)]
 mod tests {
     use super::*;
-
 }
